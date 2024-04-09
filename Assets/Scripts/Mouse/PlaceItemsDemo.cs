@@ -15,6 +15,7 @@ public class PlaceItemsDemo : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask layerMask;
+    [SerializeField] private GameObject healthBarPrefab;
     //[SerializeField] private GameManager gameManager;
     public GameObject currentItemToPlace;
 
@@ -58,7 +59,8 @@ public class PlaceItemsDemo : MonoBehaviour
     {
         if (target.x != Mathf.Infinity)
         {
-            Instantiate(currentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+            GameObject placedItem = Instantiate(currentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+            Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
         }
     }
 

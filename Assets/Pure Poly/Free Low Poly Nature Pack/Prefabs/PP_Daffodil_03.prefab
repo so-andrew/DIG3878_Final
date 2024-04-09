@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8123141273917358959}
   m_Layer: 0
   m_Name: PP_Daffodil_03
-  m_TagString: Untagged
+  m_TagString: plant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
