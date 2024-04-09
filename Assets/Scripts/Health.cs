@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    int health = 100;
+    float health = 100f;
     [SerializeField] Slider slider;
     [SerializeField] Camera playerCamera;
     [SerializeField] Vector3 offset = new Vector3(0, 1, 0);
@@ -34,7 +34,7 @@ public class Health : MonoBehaviour
         transform.position = transform.parent.position + offset; // health bar positioned according to parent object (plant) location
     }
 
-    public void takeDamage(int damage)
+    public void takeDamage(float damage)
     {
         if (health > 0)
         {
@@ -53,6 +53,6 @@ public class Health : MonoBehaviour
 
     void UpdateSlider()
     {
-        slider.value = (float)health / 100;
+        slider.value = health / 100;
     }
 }
