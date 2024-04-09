@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5503181911353710195}
   - component: {fileID: 7763024347283268281}
   - component: {fileID: 8123141273917358959}
+  - component: {fileID: 9219456125218295841}
   m_Layer: 0
   m_Name: PP_Daffodil_03
   m_TagString: plant
@@ -106,3 +107,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5902438668197411763, guid: 4e40842238bcca046a7c50ffff32b019, type: 3}
+--- !u!114 &9219456125218295841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8123141273917358956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0264c97b0b23ed4bb2626fa668c0f25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moneyPrefab: {fileID: 4232354131970254903, guid: eee136f84f0483740be78d7134743044, type: 3}
+  minInterval: 5
+  maxInterval: 10
+  moneyLifetime: 5
