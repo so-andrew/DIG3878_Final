@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        playerCurrency = startingPlayerCurrency;
     }
 
     public PlaceItemsDemo ItemPlacer;
@@ -24,21 +28,53 @@ public class GameManager : MonoBehaviour
     private MouseMode previousMouseMode;
     public GameObject mainUI;
     public GameObject shopUI;
+    public GameObject inventoryUI;
+    [SerializeField] private float startingPlayerCurrency = 500f;
+    public float playerCurrency;
+
+    private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
 
     private bool shopUIActive = false;
     private bool mainUIActive = true;
-    // Start is called before the first frame update
+    private bool inventoryUIActive = false;
+
     void Start()
     {
         CurrentMouseMode = MouseMode.Default;
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
+        inventoryUI.SetActive(inventoryUIActive);
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
 
+    public void AddToInventory(Item.ItemType type, int amount){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            inventoryDict[type] += amount;
+        }
+        else {
+            inventoryDict.Add(type, amount);
+        }
+    }
+
+    public void RemoveFromInventory(Item.ItemType type, int amount){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            inventoryDict[type] -= amount;
+            if(inventoryDict[type] <= 0){
+                inventoryDict.Remove(type);
+            }
+        }
+    }
+
+    public int GetInventoryAmount(Item.ItemType type){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            return inventoryDict[type];
+        }
+        else return 0;
     }
 
     public void SetCurrentMouseMode(MouseMode mouseMode)
@@ -51,9 +87,9 @@ public class GameManager : MonoBehaviour
     {
         shopUIActive = true;
         mainUIActive = !shopUIActive;
+        inventoryUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Shop;
-        shopUI.SetActive(shopUIActive);
-        mainUI.SetActive(mainUIActive);
+        ToggleUI();
     }
 
     public void ButtonHoverEnter()
@@ -71,11 +107,31 @@ public class GameManager : MonoBehaviour
     {
         shopUIActive = false;
         mainUIActive = !shopUIActive;
-        if (CurrentMouseMode != MouseMode.Place)
-        {
-            CurrentMouseMode = MouseMode.Default;
-        }
-        shopUI.SetActive(shopUIActive);
+        inventoryUIActive = !shopUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    public void ShowInventoryUI()
+    {
+        inventoryUIActive = true;
+        mainUIActive = !inventoryUIActive;
+        shopUIActive = !shopUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    public void HideInventoryUI(){
+        inventoryUIActive = false;
+        mainUIActive = !inventoryUIActive;
+        shopUIActive = !shopUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    private void ToggleUI(){
         mainUI.SetActive(mainUIActive);
+        shopUI.SetActive(shopUIActive);
+        inventoryUI.SetActive(inventoryUIActive);
     }
 }
