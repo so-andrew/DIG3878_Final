@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -54,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     public void AddToInventory(Item.ItemType type, int amount){
         if(inventoryDict.TryGetValue(type, out int currentAmount)){
-            inventoryDict[type] += amount;
+            inventoryDict[type] = currentAmount + amount;
         }
         else {
             inventoryDict.Add(type, amount);
@@ -63,7 +61,7 @@ public class GameManager : MonoBehaviour
 
     public void RemoveFromInventory(Item.ItemType type, int amount){
         if(inventoryDict.TryGetValue(type, out int currentAmount)){
-            inventoryDict[type] -= amount;
+            inventoryDict[type] = currentAmount - amount;
             if(inventoryDict[type] <= 0){
                 inventoryDict.Remove(type);
             }
@@ -72,9 +70,9 @@ public class GameManager : MonoBehaviour
 
     public int GetInventoryAmount(Item.ItemType type){
         if(inventoryDict.TryGetValue(type, out int currentAmount)){
-            return inventoryDict[type];
+            return currentAmount;
         }
-        else return 0;
+        return 0;
     }
 
     public void SetCurrentMouseMode(MouseMode mouseMode)
