@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,8 @@ public class PlaceItemsDemo : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private GameObject healthBarPrefab;
     //[SerializeField] private GameManager gameManager;
-    public GameObject currentItemToPlace;
+    public GameObject CurrentItemToPlace { get; private set; }
+    public Item.ItemType CurrentItemType { get; private set; }
 
     private MeshRenderer indicator;
 
@@ -57,16 +59,27 @@ public class PlaceItemsDemo : MonoBehaviour
 
     private void HandleClickDemo(Vector3 target)
     {
-        if (target.x != Mathf.Infinity)
+        if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            GameObject placedItem = Instantiate(currentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+            GameManager.Instance.UpdateInventoryDisplay();
+            GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
             Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
         }
     }
 
+    private bool CanPlaceCurrentItem(){
+        return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
+    }
+
+    public void SetCurrentItem(Item.ItemType type){
+        CurrentItemType = type;
+        CurrentItemToPlace = Item.GetGameObject(type);
+    }
+
     private Vector3 RandomObjectRotation()
     {
-        return new Vector3(0, Random.Range(0f, 360f), 0);
+        return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
     private Vector3 RaycastCheck()

@@ -16,29 +16,71 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        playerCurrency = startingPlayerCurrency;
     }
 
     public PlaceItemsDemo ItemPlacer;
     public Transform placedItemParent;
     public MouseMode CurrentMouseMode { get; private set; }
-    private MouseMode previousMouseMode;
+    public MouseMode PreviousMouseMode { get; private set; }
     public GameObject mainUI;
     public GameObject shopUI;
+    public GameObject inventoryUI;
+    [SerializeField] private float startingPlayerCurrency = 500f;
+    public float playerCurrency;
+
+    private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
 
     private bool shopUIActive = false;
     private bool mainUIActive = true;
-    // Start is called before the first frame update
+    private bool inventoryUIActive = false;
+
     void Start()
     {
         CurrentMouseMode = MouseMode.Default;
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
+        inventoryUI.SetActive(inventoryUIActive);
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
 
+    public void AddToInventory(Item.ItemType type, int amount){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            inventoryDict[type] = currentAmount + amount;
+        }
+        else {
+            inventoryDict.Add(type, amount);
+        }
+    }
+
+    public void RemoveFromInventory(Item.ItemType type, int amount){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            inventoryDict[type] = currentAmount - amount;
+            if(inventoryDict[type] <= 0){
+                inventoryDict.Remove(type);
+            }
+        }
+    }
+
+    public int GetInventoryItemAmount(Item.ItemType type){
+        if(inventoryDict.TryGetValue(type, out int currentAmount)){
+            return currentAmount;
+        }
+        return 0;
+    }
+
+    public int GetInventoryTotalItemTypes(){
+        return inventoryDict.Count;
+    }
+
+    public Dictionary<Item.ItemType, int>.KeyCollection GetInventoryKeys(){
+        return inventoryDict.Keys;
     }
 
     public void SetCurrentMouseMode(MouseMode mouseMode)
@@ -52,30 +94,50 @@ public class GameManager : MonoBehaviour
         shopUIActive = true;
         mainUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Shop;
-        shopUI.SetActive(shopUIActive);
-        mainUI.SetActive(mainUIActive);
+        ToggleUI();
     }
 
     public void ButtonHoverEnter()
     {
-        previousMouseMode = CurrentMouseMode;
+        PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = MouseMode.Default;
     }
 
     public void ButtonHoverExit()
     {
-        CurrentMouseMode = previousMouseMode;
+        CurrentMouseMode = PreviousMouseMode;
     }
 
     public void HideShopUI()
     {
         shopUIActive = false;
         mainUIActive = !shopUIActive;
-        if (CurrentMouseMode != MouseMode.Place)
-        {
-            CurrentMouseMode = MouseMode.Default;
-        }
-        shopUI.SetActive(shopUIActive);
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    public void ShowInventoryUI()
+    {
+        inventoryUIActive = true;
+        mainUIActive = !inventoryUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    public void HideInventoryUI(){
+        inventoryUIActive = false;
+        mainUIActive = !inventoryUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
+    private void ToggleUI(){
         mainUI.SetActive(mainUIActive);
+        shopUI.SetActive(shopUIActive);
+        inventoryUI.SetActive(inventoryUIActive);
+    }
+
+    public void UpdateInventoryDisplay(){
+        inventoryUI.GetComponent<InventoryMenu>().GenerateButtons();
     }
 }
