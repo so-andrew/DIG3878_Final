@@ -68,8 +68,9 @@ public class ShopMenu : MonoBehaviour
         // Add to inventory
         // TODO: Allow user to purchase quantity > 1
         GameManager.Instance.AddToInventory(itemType, 1);
-        Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryAmount(itemType)}");
+        Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryItemAmount(itemType)}");
         UpdateShopDisplay();
+        GameManager.Instance.UpdateInventoryDisplay();
 
         // GameManager.Instance.ItemPlacer.currentItemToPlace = Item.GetGameObject(itemType);
         // GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
@@ -79,9 +80,8 @@ public class ShopMenu : MonoBehaviour
     private void UpdateShopDisplay(){
         foreach (Transform child in container){
             Transform itemPrice = child.Find("ItemPrice");
-            int cost;
-            bool validInt = int.TryParse(itemPrice.GetComponent<TMP_Text>().text, out cost);
-            if(validInt){
+            bool validInt = int.TryParse(itemPrice.GetComponent<TMP_Text>().text, out int cost);
+            if (validInt){
                 if(cost > GameManager.Instance.playerCurrency){
                     itemPrice.GetComponent<TMP_Text>().color = Color.red;
                 }

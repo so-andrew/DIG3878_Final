@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     public PlaceItemsDemo ItemPlacer;
     public Transform placedItemParent;
     public MouseMode CurrentMouseMode { get; private set; }
-    private MouseMode previousMouseMode;
+    public MouseMode PreviousMouseMode { get; private set; }
     public GameObject mainUI;
     public GameObject shopUI;
     public GameObject inventoryUI;
@@ -68,11 +68,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int GetInventoryAmount(Item.ItemType type){
+    public int GetInventoryItemAmount(Item.ItemType type){
         if(inventoryDict.TryGetValue(type, out int currentAmount)){
             return currentAmount;
         }
         return 0;
+    }
+
+    public int GetInventoryTotalItemTypes(){
+        return inventoryDict.Count;
+    }
+
+    public Dictionary<Item.ItemType, int>.KeyCollection GetInventoryKeys(){
+        return inventoryDict.Keys;
     }
 
     public void SetCurrentMouseMode(MouseMode mouseMode)
@@ -85,27 +93,25 @@ public class GameManager : MonoBehaviour
     {
         shopUIActive = true;
         mainUIActive = !shopUIActive;
-        inventoryUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Shop;
         ToggleUI();
     }
 
     public void ButtonHoverEnter()
     {
-        previousMouseMode = CurrentMouseMode;
+        PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = MouseMode.Default;
     }
 
     public void ButtonHoverExit()
     {
-        CurrentMouseMode = previousMouseMode;
+        CurrentMouseMode = PreviousMouseMode;
     }
 
     public void HideShopUI()
     {
         shopUIActive = false;
         mainUIActive = !shopUIActive;
-        inventoryUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Default;
         ToggleUI();
     }
@@ -114,7 +120,6 @@ public class GameManager : MonoBehaviour
     {
         inventoryUIActive = true;
         mainUIActive = !inventoryUIActive;
-        shopUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Default;
         ToggleUI();
     }
@@ -122,7 +127,6 @@ public class GameManager : MonoBehaviour
     public void HideInventoryUI(){
         inventoryUIActive = false;
         mainUIActive = !inventoryUIActive;
-        shopUIActive = !shopUIActive;
         CurrentMouseMode = MouseMode.Default;
         ToggleUI();
     }
@@ -131,5 +135,9 @@ public class GameManager : MonoBehaviour
         mainUI.SetActive(mainUIActive);
         shopUI.SetActive(shopUIActive);
         inventoryUI.SetActive(inventoryUIActive);
+    }
+
+    public void UpdateInventoryDisplay(){
+        inventoryUI.GetComponent<InventoryMenu>().GenerateButtons();
     }
 }
