@@ -69,7 +69,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 318980707, guid: 145557c7dfea6864da9503acac9b0f0e, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1022,6 +1022,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 681727045282838367, guid: 1c99e69245be341a68071631d8ecad35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980102911757005945, guid: 1c99e69245be341a68071631d8ecad35, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980102911757005945, guid: 1c99e69245be341a68071631d8ecad35, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980102911757005945, guid: 1c99e69245be341a68071631d8ecad35, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980102911757005945, guid: 1c99e69245be341a68071631d8ecad35, type: 3}
+      propertyPath: m_fontColor.r
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

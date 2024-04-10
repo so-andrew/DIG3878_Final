@@ -93,14 +93,14 @@ public class GameManager : MonoBehaviour
     {
         shopUIActive = true;
         mainUIActive = !shopUIActive;
-        CurrentMouseMode = MouseMode.Shop;
+        CurrentMouseMode = MouseMode.UI;
         ToggleUI();
     }
 
     public void ButtonHoverEnter()
     {
         PreviousMouseMode = CurrentMouseMode;
-        CurrentMouseMode = MouseMode.Default;
+        CurrentMouseMode = MouseMode.UI;
     }
 
     public void ButtonHoverExit()
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
     {
         inventoryUIActive = true;
         mainUIActive = !inventoryUIActive;
-        CurrentMouseMode = MouseMode.Default;
+        CurrentMouseMode = MouseMode.UI;
         ToggleUI();
     }
 
