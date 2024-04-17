@@ -36,15 +36,20 @@ public class PlaceItemsDemo : MonoBehaviour
         // Show indicator if in place mode
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
+        // Use raycast to get mouse position
         Vector3 mousePosition;
-        if(GameManager.Instance.CurrentMouseMode == MouseMode.Place){
+        if (GameManager.Instance.CurrentMouseMode == MouseMode.Place)
+        {
             mousePosition = PlaceItemRaycastCheck();
         }
-        else {
+        else
+        {
             mousePosition = DefaultRaycastCheck();
         }
-        
+
         MoveCursor(mousePosition);
+
+        // Handle input
         if (Input.GetMouseButtonDown(0))
         {
             switch (GameManager.Instance.CurrentMouseMode)
@@ -69,23 +74,32 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Handle item placement
     private void HandleClickDemo(Vector3 target)
     {
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
-            GameManager.Instance.UpdateInventoryDisplay();
+            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1); // Remove 1 of current item from inventory
+            GameManager.Instance.UpdateInventoryDisplay(); // Update inventory display
+
+            // Spawn item
             GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
             Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+            GameManager.Instance.IncrementSpawnCounter(CurrentItemType); // Increment spawn counter
         }
     }
 
-    private void HandlePickup(Vector3 target){
-        if (target.x != Mathf.Infinity){
+    // Handle interaction with entities
+    private void HandlePickup(Vector3 target)
+    {
+        if (target.x != Mathf.Infinity)
+        {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask)){
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                if (clickableItem.CompareTag("Money")){
+                if (clickableItem.CompareTag("Money"))
+                {
                     GameManager.Instance.playerCurrency += 50f;
                     Destroy(clickableItem);
                 }
@@ -93,23 +107,29 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
-    private bool CanPlaceCurrentItem(){
+    // Helper function to determine whether selected item can be placed
+    private bool CanPlaceCurrentItem()
+    {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
     }
 
-    public void SetCurrentItem(Item.ItemType type){
+    // Set item to be placed
+    public void SetCurrentItem(Item.ItemType type)
+    {
         CurrentItemType = type;
         CurrentItemToPlace = Item.GetGameObject(type);
     }
 
+    // Return random rotation vector
     private Vector3 RandomObjectRotation()
     {
         return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
-    private Vector3 DefaultRaycastCheck(){
+    // Used to determine if mouse is hovering over a clickable object
+    private Vector3 DefaultRaycastCheck()
+    {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
         {
             return raycastHit.point;
@@ -120,14 +140,12 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Used to determine if mouse is hovering over ground (for placing objects)
     private Vector3 PlaceItemRaycastCheck()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, groundLayerMask))
         {
-            //Debug.DrawRay(mainCamera.transform.position, raycastHit.point, Color.red);
-            //Debug.Log(raycastHit.point);
             return raycastHit.point;
         }
         else
