@@ -10,7 +10,8 @@ public class Item
         Plant2,
         Plant3,
         Decoration,
-        Tool
+        Tool,
+        Medicine
     }
 
     public static int GetCost(ItemType itemType)
