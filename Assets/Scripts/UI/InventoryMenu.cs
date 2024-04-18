@@ -25,6 +25,7 @@ public class InventoryMenu : MonoBehaviour
 
     public void GenerateButtons()
     {
+        //Debug.Log("Running GenerateButtons");
         int i = 0;
         if (container == null) return; // Container gameObject is not active; menu will update when shown again
         GameObject[] containerChildren = new GameObject[container.childCount];
@@ -73,7 +74,7 @@ public class InventoryMenu : MonoBehaviour
 
     private void SetItemToPlace(Item.ItemType itemType)
     {
-        Debug.Log("Setting item " + itemType.ToString());
+        //Debug.Log("Setting item " + itemType.ToString());
         GameManager.Instance.ItemPlacer.SetCurrentItem(itemType);
         GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
     }

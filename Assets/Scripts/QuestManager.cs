@@ -15,7 +15,7 @@ public enum QuestType
     Money
 }
 
-abstract class Quest
+public abstract class Quest
 {
     public string ID { get; set; }
     public string DisplayName { get; set; }
@@ -30,7 +30,7 @@ abstract class Quest
     public abstract void CompleteQuest();
 }
 
-class PlaceItemQuest : Quest
+public class PlaceItemQuest : Quest
 {
     public Item.ItemType ItemType { get; set; }
     public int RequiredAmount { get; set; }
@@ -70,6 +70,7 @@ class PlaceItemQuest : Quest
         Complete = true;
         GameManager.Instance.playerCurrency += RewardAmount;
         Debug.Log($"Quest {ID} completed");
+        GameManager.Instance.UpdateQuestDisplay();
     }
 
     public void UpdateQuestPopup()
@@ -84,7 +85,11 @@ class PlaceItemQuest : Quest
 
         PreviousAmount = CurrentAmount;
         CurrentAmount = amount;
-        if (doUpdate) UpdateQuestPopup();
+        if (doUpdate)
+        {
+            UpdateQuestPopup();
+            GameManager.Instance.UpdateQuestDisplay();
+        }
     }
 }
 
@@ -97,19 +102,28 @@ public class QuestManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
+
+        Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", Item.ItemType.Plant1, 5, 250));
+        Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", Item.ItemType.Plant2, 2, 250));
+        Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", Item.ItemType.Plant3, 1, 250));
     }
 
     void Start()
     {
-        Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", Item.ItemType.Plant1, 5, 250));
-        Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", Item.ItemType.Plant2, 2, 250));
-        Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", Item.ItemType.Plant3, 1, 250));
+        // Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", Item.ItemType.Plant1, 5, 250));
+        // Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", Item.ItemType.Plant2, 2, 250));
+        // Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", Item.ItemType.Plant3, 1, 250));
     }
 
     void Update()
     {
         // Check all quests
         CheckQuestStatus();
+    }
+
+    public List<Quest> GetQuests()
+    {
+        return Quests;
     }
 
     private void CheckQuestStatus()

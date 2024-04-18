@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject mainUI;
     public GameObject shopUI;
     public GameObject inventoryUI;
+    public GameObject questUI;
     public GameObject questPopup;
     [SerializeField] private float startingPlayerCurrency = 500f;
     public float playerCurrency;
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     private bool shopUIActive = false;
     private bool mainUIActive = true;
     private bool inventoryUIActive = false;
+    private bool questUIActive = false;
     private bool questPopupActive = false;
     private float questPopupDesiredAlpha = 0f;
     private float questPopupCurrentAlpha = 0f;
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
         inventoryUI.SetActive(inventoryUIActive);
+        questUI.SetActive(questUIActive);
         questPopup.SetActive(questPopupActive);
     }
 
@@ -186,12 +189,31 @@ public class GameManager : MonoBehaviour
         ToggleUI();
     }
 
+    // Set quest UI active
+    public void ShowQuestUI()
+    {
+        questUIActive = true;
+        mainUIActive = !questUIActive;
+        CurrentMouseMode = MouseMode.UI;
+        ToggleUI();
+    }
+
+    // Set quest UI inactive
+    public void HideQuestUI()
+    {
+        questUIActive = false;
+        mainUIActive = !questUIActive;
+        CurrentMouseMode = MouseMode.Default;
+        ToggleUI();
+    }
+
     // Helper function to toggle different UI elements
     private void ToggleUI()
     {
         mainUI.SetActive(mainUIActive);
         shopUI.SetActive(shopUIActive);
         inventoryUI.SetActive(inventoryUIActive);
+        questUI.SetActive(questUIActive);
     }
 
     // Set quest popup active for 5 seconds
@@ -249,5 +271,10 @@ public class GameManager : MonoBehaviour
     public void UpdateInventoryDisplay()
     {
         inventoryUI.GetComponent<InventoryMenu>().GenerateButtons();
+    }
+
+    public void UpdateQuestDisplay()
+    {
+        questUI.GetComponent<QuestMenu>().GenerateQuests();
     }
 }
