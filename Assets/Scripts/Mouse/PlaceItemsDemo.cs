@@ -37,13 +37,15 @@ public class PlaceItemsDemo : MonoBehaviour
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
         Vector3 mousePosition;
-        if(GameManager.Instance.CurrentMouseMode == MouseMode.Place){
+        if (GameManager.Instance.CurrentMouseMode == MouseMode.Place)
+        {
             mousePosition = PlaceItemRaycastCheck();
         }
-        else {
+        else
+        {
             mousePosition = DefaultRaycastCheck();
         }
-        
+
         MoveCursor(mousePosition);
         if (Input.GetMouseButtonDown(0))
         {
@@ -73,31 +75,75 @@ public class PlaceItemsDemo : MonoBehaviour
     {
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
-            GameManager.Instance.UpdateInventoryDisplay();
-            GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
-            Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+            if (CurrentItemType == Item.ItemType.Medicine)
+            {
+                HandleMedicine(target);
+            }
+            else
+            {
+                GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+                GameManager.Instance.UpdateInventoryDisplay();
+                GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+                Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+            }
         }
     }
 
-    private void HandlePickup(Vector3 target){
-        if (target.x != Mathf.Infinity){
+    private void HandleMedicine(Vector3 target)
+    {
+        if (target.x != Mathf.Infinity)
+        {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask)){
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                if (clickableItem.CompareTag("Money")){
-                    GameManager.Instance.playerCurrency += 50f;
-                    Destroy(clickableItem);
+                if (clickableItem.CompareTag("plant"))
+                {
+                    Health plantHealth = clickableItem.GetComponentInChildren<Health>();
+                    if (plantHealth != null)
+                    {
+                        Debug.Log("ERROR: No health script in children?");
+                    }
+                    plantHealth.healDamage(100f);
+                    GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+                    GameManager.Instance.UpdateInventoryDisplay();
                 }
             }
         }
     }
 
-    private bool CanPlaceCurrentItem(){
+    private void HandlePickup(Vector3 target)
+    {
+        if (target.x != Mathf.Infinity)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
+                GameObject clickableItem = raycastHit.transform.gameObject;
+                Debug.Log(clickableItem.name);
+                if (clickableItem.CompareTag("Money"))
+                {
+                    GameManager.Instance.playerCurrency += 50f;
+                    Destroy(clickableItem);
+                }
+
+                if (clickableItem.CompareTag("Medicine"))
+                {
+                    GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
+                    Destroy(clickableItem);
+                }
+
+            }
+        }
+    }
+
+    private bool CanPlaceCurrentItem()
+    {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
     }
 
-    public void SetCurrentItem(Item.ItemType type){
+    public void SetCurrentItem(Item.ItemType type)
+    {
         CurrentItemType = type;
         CurrentItemToPlace = Item.GetGameObject(type);
     }
@@ -107,7 +153,8 @@ public class PlaceItemsDemo : MonoBehaviour
         return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
-    private Vector3 DefaultRaycastCheck(){
+    private Vector3 DefaultRaycastCheck()
+    {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
