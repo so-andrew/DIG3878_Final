@@ -13,7 +13,7 @@ public class DiseaseManager : MonoBehaviour
     void Start()
     {
         startTime = Time.time;
-        
+
         // Call the method at random intervals within the specified range
         InvokeRepeating("SpawnPlague", Random.Range(minInterval, maxInterval), Random.Range(minInterval, maxInterval));
     }
@@ -21,7 +21,7 @@ public class DiseaseManager : MonoBehaviour
     void SpawnPlague()
     {
         float elapsedTime = Time.time - startTime;
-        Debug.Log($"[{elapsedTime:F2} seconds] started plague!!");
+        //Debug.Log($"[{elapsedTime:F2} seconds] started plague!!");
 
         // Choose a random plant to get disease
         Transform placedItemParentTransform = GameManager.Instance.placedItemParent.transform;
@@ -42,6 +42,6 @@ public class DiseaseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
