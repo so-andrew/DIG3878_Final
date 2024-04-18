@@ -37,4 +37,17 @@ public class Item
             case ItemType.Plant3: return GameAssets.Instance.Plant3Prefab;
         }
     }
+
+    public static string GetItemName(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            default:
+            case ItemType.Plant1: return "Hyacinth";
+            case ItemType.Plant2: return "Daffodil";
+            case ItemType.Plant3: return "Sunflower";
+            case ItemType.Decoration: return "Decoration";
+            case ItemType.Tool: return "Tool";
+        }
+    }
 }

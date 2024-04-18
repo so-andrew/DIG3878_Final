@@ -36,6 +36,7 @@ public class PlaceItemsDemo : MonoBehaviour
         // Show indicator if in place mode
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
+        // Use raycast to get mouse position
         Vector3 mousePosition;
         if (GameManager.Instance.CurrentMouseMode == MouseMode.Place)
         {
@@ -47,6 +48,8 @@ public class PlaceItemsDemo : MonoBehaviour
         }
 
         MoveCursor(mousePosition);
+
+        // Handle input
         if (Input.GetMouseButtonDown(0))
         {
             switch (GameManager.Instance.CurrentMouseMode)
@@ -71,6 +74,7 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Handle item placement
     private void HandleClickDemo(Vector3 target)
     {
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
@@ -142,21 +146,23 @@ public class PlaceItemsDemo : MonoBehaviour
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
     }
 
+    // Set item to be placed
     public void SetCurrentItem(Item.ItemType type)
     {
         CurrentItemType = type;
         CurrentItemToPlace = Item.GetGameObject(type);
     }
 
+    // Return random rotation vector
     private Vector3 RandomObjectRotation()
     {
         return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
+    // Used to determine if mouse is hovering over a clickable object
     private Vector3 DefaultRaycastCheck()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
         {
             return raycastHit.point;
@@ -167,14 +173,12 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Used to determine if mouse is hovering over ground (for placing objects)
     private Vector3 PlaceItemRaycastCheck()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, groundLayerMask))
         {
-            //Debug.DrawRay(mainCamera.transform.position, raycastHit.point, Color.red);
-            //Debug.Log(raycastHit.point);
             return raycastHit.point;
         }
         else

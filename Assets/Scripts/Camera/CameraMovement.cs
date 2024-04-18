@@ -13,10 +13,12 @@ public class CameraMovement : MonoBehaviour
     public float rotateSpeed = 100f;
     public float zoomSpeed = 10f;
     public float dragPanSpeed = 2f;
+    public float minY = -7f;
 
     private bool dragPanMoveActive = false;
     private Vector2 lastMousePosition;
     private float targetFOV = 50f;
+
 
     void Update()
     {
@@ -26,7 +28,11 @@ public class CameraMovement : MonoBehaviour
             DragPanMovement();
         }
         HandleCameraRotation();
-        HandleCameraZoom_MoveForward();
+        if (GameManager.Instance.CurrentMouseMode != MouseMode.UI)
+        {
+            HandleCameraZoom_MoveForward();
+        }
+
     }
     private void HandleCameraMovement()
     {
@@ -98,7 +104,6 @@ public class CameraMovement : MonoBehaviour
 
     private void HandleCameraZoom_MoveForward()
     {
-
         if (Input.mouseScrollDelta.y > 0)
         {
             cam.transform.position += Time.deltaTime * zoomSpeed * cam.transform.forward;
@@ -107,6 +112,7 @@ public class CameraMovement : MonoBehaviour
         {
             cam.transform.position -= Time.deltaTime * zoomSpeed * cam.transform.forward;
         }
+        if (cam.transform.position.y < minY) cam.transform.position = new Vector3(cam.transform.position.x, minY, cam.transform.position.z);
     }
 }
 
