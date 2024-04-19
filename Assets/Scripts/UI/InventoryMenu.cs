@@ -68,14 +68,21 @@ public class InventoryMenu : MonoBehaviour
         tooltip.GetChild(1).GetComponent<TMP_Text>().text = Item.GetItemName(type);
         tooltip.gameObject.SetActive(false);
 
-        itemTransform.GetComponent<Button>().onClick.AddListener(() => SetItemToPlace(type));
+        itemTransform.GetComponent<Button>().onClick.AddListener(() => SetActiveItem(type));
         itemTransform.gameObject.SetActive(true);
     }
 
-    private void SetItemToPlace(Item.ItemType itemType)
+    private void SetActiveItem(Item.ItemType itemType)
     {
         //Debug.Log("Setting item " + itemType.ToString());
         GameManager.Instance.ItemPlacer.SetCurrentItem(itemType);
-        GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
+        if (itemType == Item.ItemType.Medicine)
+        {
+            GameManager.Instance.SetCurrentMouseMode(MouseMode.Heal);
+        }
+        else
+        {
+            GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
+        }
     }
 }
