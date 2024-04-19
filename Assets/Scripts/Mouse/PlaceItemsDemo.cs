@@ -85,17 +85,16 @@ public class PlaceItemsDemo : MonoBehaviour
         Debug.Log("Handle click");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            if (CurrentItemType == Item.ItemType.Medicine)
-            {
-                //HandleMedicine(target);
-            }
-            else
-            {
-                GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
-                GameManager.Instance.UpdateInventoryDisplay();
-                GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
-                Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
-            }
+            // Update inventory
+            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+            GameManager.Instance.UpdateInventoryDisplay();
+
+            // Spawn item
+            GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+            Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+
+            // Increment spawn counter
+            GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
         }
     }
 
@@ -123,6 +122,9 @@ public class PlaceItemsDemo : MonoBehaviour
                         // Update inventory
                         GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
                         GameManager.Instance.UpdateInventoryDisplay();
+
+                        // Update heal count
+                        GameManager.Instance.IncrementHealCounter();
 
                         // Set mouse mode to default
                         GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
@@ -152,13 +154,15 @@ public class PlaceItemsDemo : MonoBehaviour
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
                 Debug.Log(clickableItem.name);
+
+                // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
                     GameManager.Instance.playerCurrency += 50f;
                     Destroy(clickableItem);
                 }
-
-                if (clickableItem.CompareTag("Medicine"))
+                // Check if item is medicine
+                else if (clickableItem.CompareTag("Medicine"))
                 {
                     GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
                     GameManager.Instance.UpdateInventoryDisplay();
@@ -169,6 +173,7 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Check if user has enough of current item in inventory to be placed
     private bool CanPlaceCurrentItem()
     {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;

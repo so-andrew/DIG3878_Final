@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public GameObject questPopup;
     [SerializeField] private float startingPlayerCurrency = 500f;
     public float playerCurrency;
+    public int HealCount { get; private set; }
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -48,6 +49,8 @@ public class GameManager : MonoBehaviour
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
         questPopup.SetActive(questPopupActive);
+
+        HealCount = 0;
     }
 
     void Update()
@@ -123,6 +126,11 @@ public class GameManager : MonoBehaviour
         {
             spawnedItems.Add(type, 1);
         }
+    }
+
+    public void IncrementHealCounter()
+    {
+        HealCount += 1;
     }
 
     // Return how many of x item has been placed

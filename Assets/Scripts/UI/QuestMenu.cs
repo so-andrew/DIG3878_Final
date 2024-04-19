@@ -70,7 +70,7 @@ public class QuestMenu : MonoBehaviour
         }
 
         List<Quest> quests = QuestManager.Instance.GetQuests();
-        var active = quests.Where(x => x.Complete == false);
+        var active = quests.Where(x => x.Complete == false && x.Active == true);
         foreach (Quest quest in active)
         {
             CreateActiveQuestUIItem(quest);
@@ -97,7 +97,7 @@ public class QuestMenu : MonoBehaviour
         }
 
         List<Quest> quests = QuestManager.Instance.GetQuests();
-        var completed = quests.Where(x => x.Complete == true);
+        var completed = quests.Where(x => x.Complete == true && x.Active == true);
         foreach (Quest quest in completed)
         {
             CreateCompletedQuestUIItem(quest);
@@ -115,6 +115,10 @@ public class QuestMenu : MonoBehaviour
         if (quest is PlaceItemQuest quest1)
         {
             questProgress.GetComponent<TMP_Text>().text = $"{quest1.CurrentAmount}/{quest1.RequiredAmount}";
+        }
+        else if (quest is HealQuest quest2)
+        {
+            questProgress.GetComponent<TMP_Text>().text = $"{quest2.CurrentAmount}/{quest2.RequiredAmount}";
         }
         else
         {
