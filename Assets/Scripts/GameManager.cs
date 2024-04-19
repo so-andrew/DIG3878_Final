@@ -16,18 +16,38 @@ public class GameManager : MonoBehaviour
     }
 
     // Public variables
-    public PlaceItemsDemo ItemPlacer;
+    [Header("Mouse Handler")]
+    [Tooltip("Script that handles mouse click functions.")]
+    public MouseClick MouseClickHandler;
+
+    [Header("Game Objects")]
+    [Tooltip("Transform that contains all placed plants.")]
     public Transform placedItemParent;
-    public MouseMode CurrentMouseMode { get; private set; }
-    public MouseMode PreviousMouseMode { get; private set; }
+
+    [Header("UI Elements")]
     public GameObject mainUI;
     public GameObject shopUI;
     public GameObject inventoryUI;
     public GameObject questUI;
     public GameObject questPopup;
+    public HealthUI healthUI;
+
+    [Header("Player Currency")]
     [SerializeField] private float startingPlayerCurrency = 500f;
     public float playerCurrency;
+
+    [Header("Player Health")]
+    public float gameHealth = 100f;
+    public float maxPlayerHealth = 100f;
+    [Tooltip("This factor is multiplied by the percentage of sick plants to determine health drop rate.")]
+    public float healthDecreaseFactor = 1f;
+    [Tooltip("This factor is multiplied by the percentage of healthy plants to determine health regen rate.")]
+    public float healthIncreaseFactor = 0.5f;
+
+    // Public get, private set variables
     public int HealCount { get; private set; }
+    public MouseMode CurrentMouseMode { get; private set; }
+    public MouseMode PreviousMouseMode { get; private set; }
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -43,28 +63,57 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        CurrentMouseMode = MouseMode.Default;
+        // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
         questPopup.SetActive(questPopupActive);
 
+        // Initialize game variables
+        CurrentMouseMode = MouseMode.Default;
         HealCount = 0;
     }
 
     void Update()
     {
-        if (questPopupDisplayTime > 0f)
+        TrackGameHealth();
+        DecrementQuestPopupTimer();
+    }
+
+    private void TrackGameHealth()
+    {
+        // Get how many plants are spawned
+        int childCount = placedItemParent.childCount;
+        int lowHealthPlants = 0;
+
+        foreach (Transform child in placedItemParent)
         {
-            questPopupDisplayTime -= Time.deltaTime;
+            //Debug.Log(child.gameObject.name);
+            Health childHealthScript = child.GetComponentInChildren<Health>();
+            if (childHealthScript.health < childHealthScript.maxHealth * 0.25f)
+            {
+                lowHealthPlants++;
+            }
         }
-        else
+        if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
+
+        float netHealthChange = 0;
+
+        if (childCount > 0)
         {
-            questPopupActive = false;
-            questPopupDesiredAlpha = 0f;
+            float amountDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
+            //if (amountDecrease > 0) Debug.Log("amountDecrease = " + amountDecrease);
+
+            float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
+            //if (amountIncrease > 0) Debug.Log("amountIncrease = " + amountIncrease);
+
+            Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
+            netHealthChange = amountIncrease - amountDecrease;
+            gameHealth = Mathf.Min(100f, gameHealth + netHealthChange);
         }
-        SetQuestPopupAlpha();
+
+        UpdateHealthSlider(netHealthChange);
     }
 
     // Add x amount of item to inventory dictionary
@@ -247,6 +296,8 @@ public class GameManager : MonoBehaviour
             completionPercentageText.SetActive(true);
             completionImage.SetActive(false);
         }
+
+        // Activate quest popup for 5 seconds
         questPopupActive = true;
         questPopup.SetActive(questPopupActive);
         questPopupDisplayTime = 5.0f;
@@ -275,14 +326,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Decrements quest popup timer every frame; called in Update()
+    private void DecrementQuestPopupTimer()
+    {
+        // Quest popup display timer
+        if (questPopupDisplayTime > 0f)
+        {
+            questPopupDisplayTime -= Time.deltaTime;
+        }
+        else
+        {
+            questPopupActive = false;
+            questPopupDesiredAlpha = 0f;
+        }
+        SetQuestPopupAlpha();
+    }
+
     // Call InventoryMenu.GenerateButtons()
     public void UpdateInventoryDisplay()
     {
         inventoryUI.GetComponent<InventoryMenu>().GenerateButtons();
     }
 
+    // Call Questmenu.GenerateQuests()
     public void UpdateQuestDisplay()
     {
         questUI.GetComponent<QuestMenu>().GenerateQuests();
+    }
+
+    private void UpdateHealthSlider(float change)
+    {
+        healthUI.ToggleGainIndicator(change);
+        healthUI.SetSliderValue(gameHealth);
     }
 }
