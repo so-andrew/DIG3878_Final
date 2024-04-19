@@ -13,7 +13,7 @@ public class DiseaseManager : MonoBehaviour
     void Start()
     {
         startTime = Time.time;
-        
+
         // Call the method at random intervals within the specified range
         InvokeRepeating("SpawnPlague", Random.Range(minInterval, maxInterval), Random.Range(minInterval, maxInterval));
     }
@@ -21,7 +21,7 @@ public class DiseaseManager : MonoBehaviour
     void SpawnPlague()
     {
         float elapsedTime = Time.time - startTime;
-        Debug.Log($"[{elapsedTime:F2} seconds] started plague!!");
+        //Debug.Log($"[{elapsedTime:F2} seconds] started plague!!");
 
         // Choose a random plant to get disease
         Transform placedItemParentTransform = GameManager.Instance.placedItemParent.transform;
@@ -31,17 +31,29 @@ public class DiseaseManager : MonoBehaviour
         {
             int randomPlantIndex = Random.Range(0, numPlants);
 
-            // Get position of the chosen plant
-            Vector3 startPosition = placedItemParentTransform.GetChild(randomPlantIndex).position;
+            // Get chosen plant
+            GameObject chosenPlant = placedItemParentTransform.GetChild(randomPlantIndex).gameObject;
+            Health plantHealth = chosenPlant.GetComponentInChildren<Health>();
 
-            // Instantiate disease (no rotation)
-            Instantiate(plagePrefab, startPosition, Quaternion.identity);
+            // Check if plant has been recently healed (serves as a reinfection cooldown)
+            if (!plantHealth.recentlyHealed)
+            {
+                // Get position of the chosen plant
+                Vector3 startPosition = chosenPlant.transform.position;
+
+                // Instantiate disease (no rotation)
+                Instantiate(plagePrefab, startPosition, Quaternion.identity);
+            }
+            else
+            {
+                Debug.Log("This plant has been recently healed, skipping");
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

@@ -8,6 +8,7 @@ public enum MouseMode
 {
     Default,
     Place,
+    Heal,
     Remove,
     Upgrade,
     UI
@@ -18,6 +19,7 @@ public class PlaceItemsDemo : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private LayerMask clickableLayerMask;
+    [SerializeField] private LayerMask diseaseLayerMask;
     [SerializeField] private GameObject healthBarPrefab;
     //[SerializeField] private GameManager gameManager;
     public GameObject CurrentItemToPlace { get; private set; }
@@ -57,6 +59,9 @@ public class PlaceItemsDemo : MonoBehaviour
                 case MouseMode.Place:
                     HandleClickDemo(mousePosition);
                     break;
+                case MouseMode.Heal:
+                    HandleMedicine(mousePosition);
+                    break;
                 case MouseMode.Default:
                     HandlePickup(mousePosition);
                     break;
@@ -77,19 +82,69 @@ public class PlaceItemsDemo : MonoBehaviour
     // Handle item placement
     private void HandleClickDemo(Vector3 target)
     {
+        Debug.Log("Handle click");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1); // Remove 1 of current item from inventory
-            GameManager.Instance.UpdateInventoryDisplay(); // Update inventory display
+            // Update inventory
+            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+            GameManager.Instance.UpdateInventoryDisplay();
 
             // Spawn item
             GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
             Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
-            GameManager.Instance.IncrementSpawnCounter(CurrentItemType); // Increment spawn counter
+
+            // Increment spawn counter
+            GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
         }
     }
 
-    // Handle interaction with entities
+    private void HandleMedicine(Vector3 target)
+    {
+        Debug.Log("Handle medicine");
+        if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
+                GameObject clickableItem = raycastHit.transform.gameObject;
+                Debug.Log(clickableItem.name);
+                if (clickableItem.CompareTag("plant"))
+                {
+                    Health plantHealth = clickableItem.GetComponentInChildren<Health>();
+                    if (plantHealth == null)
+                    {
+                        Debug.Log("ERROR: No health script in children?");
+                    }
+                    else
+                    {
+                        plantHealth.healDamage(100f); // Heal plant
+
+                        // Update inventory
+                        GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+                        GameManager.Instance.UpdateInventoryDisplay();
+
+                        // Update heal count
+                        GameManager.Instance.IncrementHealCounter();
+
+                        // Set mouse mode to default
+                        GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+
+                        // Destroy plague originating at plant location
+                        Collider[] hitColliders = Physics.OverlapSphere(clickableItem.transform.position, 1f);
+                        foreach (var collider in hitColliders)
+                        {
+                            if (collider.gameObject.layer == LayerMask.NameToLayer("Disease"))
+                            {
+                                Destroy(collider.gameObject);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
     private void HandlePickup(Vector3 target)
     {
         if (target.x != Mathf.Infinity)
@@ -98,16 +153,27 @@ public class PlaceItemsDemo : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
+                Debug.Log(clickableItem.name);
+
+                // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
                     GameManager.Instance.playerCurrency += 50f;
                     Destroy(clickableItem);
                 }
+                // Check if item is medicine
+                else if (clickableItem.CompareTag("Medicine"))
+                {
+                    GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
+                    GameManager.Instance.UpdateInventoryDisplay();
+                    Destroy(clickableItem);
+                }
+
             }
         }
     }
 
-    // Helper function to determine whether selected item can be placed
+    // Check if user has enough of current item in inventory to be placed
     private bool CanPlaceCurrentItem()
     {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;

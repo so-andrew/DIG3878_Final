@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public GameObject questPopup;
     [SerializeField] private float startingPlayerCurrency = 500f;
     public float playerCurrency;
+    public int HealCount { get; private set; }
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -48,6 +49,8 @@ public class GameManager : MonoBehaviour
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
         questPopup.SetActive(questPopupActive);
+
+        HealCount = 0;
     }
 
     void Update()
@@ -125,6 +128,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void IncrementHealCounter()
+    {
+        HealCount += 1;
+    }
+
     // Return how many of x item has been placed
     public int GetSpawnedTotal(Item.ItemType type)
     {
@@ -139,18 +147,18 @@ public class GameManager : MonoBehaviour
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
         // TODO: Logic checks
+        PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = mouseMode;
     }
 
     public void ButtonHoverEnter()
     {
-        PreviousMouseMode = CurrentMouseMode;
-        CurrentMouseMode = MouseMode.UI;
+        SetCurrentMouseMode(MouseMode.UI);
     }
 
     public void ButtonHoverExit()
     {
-        CurrentMouseMode = PreviousMouseMode;
+        SetCurrentMouseMode(PreviousMouseMode);
     }
 
     // Set shop UI active
@@ -225,7 +233,7 @@ public class GameManager : MonoBehaviour
         GameObject completionPercentageText = questPopup.transform.Find("CompletionPercent").gameObject;
         GameObject completionImage = questPopup.transform.Find("CompleteImage").gameObject;
         float completionPercentage = progressAmount / requiredAmount;
-        Debug.Log("Percentage = " + completionPercentage);
+        //Debug.Log("Percentage = " + completionPercentage);
 
         completionPercentageText.GetComponent<TMP_Text>().text = $"{progressAmount}/{requiredAmount}";
 
