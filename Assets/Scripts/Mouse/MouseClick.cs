@@ -14,7 +14,7 @@ public enum MouseMode
     UI
 }
 
-public class PlaceItemsDemo : MonoBehaviour
+public class MouseClick : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask groundLayerMask;
@@ -82,7 +82,7 @@ public class PlaceItemsDemo : MonoBehaviour
     // Handle item placement
     private void HandleClickDemo(Vector3 target)
     {
-        Debug.Log("Handle click");
+        //Debug.Log("Handle click");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             // Update inventory
@@ -100,14 +100,14 @@ public class PlaceItemsDemo : MonoBehaviour
 
     private void HandleMedicine(Vector3 target)
     {
-        Debug.Log("Handle medicine");
+        //Debug.Log("Handle medicine");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                Debug.Log(clickableItem.name);
+                //Debug.Log(clickableItem.name);
                 if (clickableItem.CompareTag("plant"))
                 {
                     Health plantHealth = clickableItem.GetComponentInChildren<Health>();

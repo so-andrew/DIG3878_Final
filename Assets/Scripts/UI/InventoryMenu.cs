@@ -75,7 +75,7 @@ public class InventoryMenu : MonoBehaviour
     private void SetActiveItem(Item.ItemType itemType)
     {
         //Debug.Log("Setting item " + itemType.ToString());
-        GameManager.Instance.ItemPlacer.SetCurrentItem(itemType);
+        GameManager.Instance.MouseClickHandler.SetCurrentItem(itemType);
         if (itemType == Item.ItemType.Medicine)
         {
             GameManager.Instance.SetCurrentMouseMode(MouseMode.Heal);
