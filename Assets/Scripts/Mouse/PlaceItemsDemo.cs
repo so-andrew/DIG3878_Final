@@ -37,14 +37,19 @@ public class PlaceItemsDemo : MonoBehaviour
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
         Vector3 mousePosition;
-        if(GameManager.Instance.CurrentMouseMode == MouseMode.Place){
+        if (GameManager.Instance.CurrentMouseMode == MouseMode.Place)
+        {
             mousePosition = PlaceItemRaycastCheck();
         }
-        else {
+        else
+        {
             mousePosition = DefaultRaycastCheck();
         }
-        
+
         MoveCursor(mousePosition);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
+        //Debug.Log(mousePosition);
         if (Input.GetMouseButtonDown(0))
         {
             switch (GameManager.Instance.CurrentMouseMode)
@@ -80,13 +85,25 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
-    private void HandlePickup(Vector3 target){
+    private void HandlePickup(Vector3 target)
+    {
+        Debug.Log("Handle pickup");
         if (target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            //Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
+            //Debug.Log(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
+                if (raycastHit.transform == null)
+                {
+                    Debug.Log("No transform here");
+                }
+                Debug.Log(raycastHit);
+                Debug.Log(raycastHit.transform);
+                Debug.Log(clickableItem);
+                Debug.Log(clickableItem.name);
                 if (clickableItem.CompareTag("Money"))
                 {
                     GameManager.Instance.playerCurrency += 50f;
@@ -98,14 +115,18 @@ public class PlaceItemsDemo : MonoBehaviour
                     //clickableItem.GetComponent<RandomMovement>().HandleEnemyClicked();
                 }
             }
+            else Debug.Log("Nothing?");
         }
+        else Debug.Log("Infinity");
     }
 
-    private bool CanPlaceCurrentItem(){
+    private bool CanPlaceCurrentItem()
+    {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
     }
 
-    public void SetCurrentItem(Item.ItemType type){
+    public void SetCurrentItem(Item.ItemType type)
+    {
         CurrentItemType = type;
         CurrentItemToPlace = Item.GetGameObject(type);
     }
@@ -115,16 +136,16 @@ public class PlaceItemsDemo : MonoBehaviour
         return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
-    private Vector3 DefaultRaycastCheck(){
+    private Vector3 DefaultRaycastCheck()
+    {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue))
         {
             return raycastHit.point;
         }
         else
         {
-            return Vector3.positiveInfinity;
+            return PlaceItemRaycastCheck();
         }
     }
 
