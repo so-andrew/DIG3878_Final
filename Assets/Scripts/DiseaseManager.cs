@@ -31,11 +31,23 @@ public class DiseaseManager : MonoBehaviour
         {
             int randomPlantIndex = Random.Range(0, numPlants);
 
-            // Get position of the chosen plant
-            Vector3 startPosition = placedItemParentTransform.GetChild(randomPlantIndex).position;
+            // Get chosen plant
+            GameObject chosenPlant = placedItemParentTransform.GetChild(randomPlantIndex).gameObject;
+            Health plantHealth = chosenPlant.GetComponentInChildren<Health>();
 
-            // Instantiate disease (no rotation)
-            Instantiate(plagePrefab, startPosition, Quaternion.identity);
+            // Check if plant has been recently healed (serves as a reinfection cooldown)
+            if (!plantHealth.recentlyHealed)
+            {
+                // Get position of the chosen plant
+                Vector3 startPosition = chosenPlant.transform.position;
+
+                // Instantiate disease (no rotation)
+                Instantiate(plagePrefab, startPosition, Quaternion.identity);
+            }
+            else
+            {
+                Debug.Log("This plant has been recently healed, skipping");
+            }
         }
     }
 

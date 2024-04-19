@@ -43,6 +43,7 @@ public class Health : MonoBehaviour
     private void UpdateHealTimer()
     {
         if (healTimer > 0) healTimer -= Time.deltaTime;
+        else recentlyHealed = false;
     }
 
     public void takeDamage(float damage)
