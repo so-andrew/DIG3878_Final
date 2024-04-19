@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
         GameObject completionPercentageText = questPopup.transform.Find("CompletionPercent").gameObject;
         GameObject completionImage = questPopup.transform.Find("CompleteImage").gameObject;
         float completionPercentage = progressAmount / requiredAmount;
-        Debug.Log("Percentage = " + completionPercentage);
+        //Debug.Log("Percentage = " + completionPercentage);
 
         completionPercentageText.GetComponent<TMP_Text>().text = $"{progressAmount}/{requiredAmount}";
 
