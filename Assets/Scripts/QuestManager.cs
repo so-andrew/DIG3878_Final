@@ -39,6 +39,7 @@ public abstract class Quest
     }
 }
 
+// Tracks how many of a specific plant is placed
 public class PlaceItemQuest : Quest
 {
     public Item.ItemType ItemType { get; set; }
@@ -52,19 +53,7 @@ public class PlaceItemQuest : Quest
             return CurrentAmount / RequiredAmount;
         }
     }
-    public PlaceItemQuest(string id, string displayName, int level, Item.ItemType type, int requiredAmount, int rewardAmount)
-    {
-        ID = id;
-        DisplayName = displayName;
-        Level = level;
-        ItemType = type;
-        RequiredAmount = requiredAmount;
-        RewardAmount = rewardAmount;
-        Active = true;
-        Complete = false;
-    }
-
-    public PlaceItemQuest(string id, string displayName, int level, Item.ItemType type, int requiredAmount, int rewardAmount, bool active)
+    public PlaceItemQuest(string id, string displayName, int level, Item.ItemType type, int requiredAmount, int rewardAmount, bool active = true)
     {
         ID = id;
         DisplayName = displayName;
@@ -96,6 +85,7 @@ public class PlaceItemQuest : Quest
     }
 }
 
+// Tracks how many times a players heals any plant
 public class HealQuest : Quest
 {
     public int RequiredAmount { get; set; }
@@ -109,18 +99,7 @@ public class HealQuest : Quest
         }
     }
 
-    public HealQuest(string id, string displayName, int level, int requiredAmount, int rewardAmount)
-    {
-        ID = id;
-        DisplayName = displayName;
-        Level = level;
-        RequiredAmount = requiredAmount;
-        RewardAmount = rewardAmount;
-        Active = true;
-        Complete = false;
-    }
-
-    public HealQuest(string id, string displayName, int level, int requiredAmount, int rewardAmount, bool active)
+    public HealQuest(string id, string displayName, int level, int requiredAmount, int rewardAmount, bool active = true)
     {
         ID = id;
         DisplayName = displayName;
@@ -161,6 +140,7 @@ public class QuestManager : MonoBehaviour
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
 
+        // Initialize quests in Awake
         Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", 1, Item.ItemType.Plant1, 5, 250));
         Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", 1, Item.ItemType.Plant2, 2, 250));
         Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", 1, Item.ItemType.Plant3, 1, 250));
@@ -169,29 +149,35 @@ public class QuestManager : MonoBehaviour
         Quests.Add(new HealQuest("Heal_Lv3", "Heal plants 10 times.", 3, 10, 500, false));
     }
 
-    void Start()
-    {
-        // Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", Item.ItemType.Plant1, 5, 250));
-        // Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", Item.ItemType.Plant2, 2, 250));
-        // Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", Item.ItemType.Plant3, 1, 250));
-    }
-
     void Update()
     {
         // Check all quests
         CheckQuestStatus();
     }
 
+    // Returns list of quests; used to render quest list in QuestMenu
     public List<Quest> GetQuests()
     {
         return Quests;
     }
 
+    public int GetCompletedQuestCount()
+    {
+        return Quests.Where(x => x.Complete).ToList().Count;
+    }
+
+    public int GetTotalQuestCount()
+    {
+        return Quests.Count;
+    }
+
+    // Loop through all quests and check for progress/completion
     private void CheckQuestStatus()
     {
         foreach (Quest quest in Quests)
         {
             if (quest.Complete) continue;
+            // Place items quest
             if (quest.Active && quest is PlaceItemQuest quest1)
             {
                 Item.ItemType type = quest1.ItemType;
@@ -203,6 +189,7 @@ public class QuestManager : MonoBehaviour
                     quest1.CompleteQuest();
                 }
             }
+            // Healing quest
             else if (quest.Active && quest is HealQuest quest2)
             {
                 int healCount = GameManager.Instance.HealCount;
