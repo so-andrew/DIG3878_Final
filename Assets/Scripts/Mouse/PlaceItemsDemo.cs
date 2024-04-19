@@ -81,13 +81,21 @@ public class PlaceItemsDemo : MonoBehaviour
     }
 
     private void HandlePickup(Vector3 target){
-        if (target.x != Mathf.Infinity){
+        if (target.x != Mathf.Infinity)
+        {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask)){
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                if (clickableItem.CompareTag("Money")){
+                if (clickableItem.CompareTag("Money"))
+                {
                     GameManager.Instance.playerCurrency += 50f;
                     Destroy(clickableItem);
+                }
+                if (clickableItem.CompareTag("Enemy"))
+                {
+                    Destroy(clickableItem);
+                    //clickableItem.GetComponent<RandomMovement>().HandleEnemyClicked();
                 }
             }
         }

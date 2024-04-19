@@ -7,6 +7,7 @@ TagManager:
   - plant
   - EnemySpawnPoint
   - Money
+  - Enemy
   layers:
   - Default
   - TransparentFX
