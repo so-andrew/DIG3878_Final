@@ -139,18 +139,18 @@ public class GameManager : MonoBehaviour
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
         // TODO: Logic checks
+        PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = mouseMode;
     }
 
     public void ButtonHoverEnter()
     {
-        PreviousMouseMode = CurrentMouseMode;
-        CurrentMouseMode = MouseMode.UI;
+        SetCurrentMouseMode(MouseMode.UI);
     }
 
     public void ButtonHoverExit()
     {
-        CurrentMouseMode = PreviousMouseMode;
+        SetCurrentMouseMode(PreviousMouseMode);
     }
 
     // Set shop UI active
