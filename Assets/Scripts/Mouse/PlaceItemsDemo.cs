@@ -8,6 +8,7 @@ public enum MouseMode
 {
     Default,
     Place,
+    Heal,
     Remove,
     Upgrade,
     UI
@@ -18,6 +19,7 @@ public class PlaceItemsDemo : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private LayerMask clickableLayerMask;
+    [SerializeField] private LayerMask diseaseLayerMask;
     [SerializeField] private GameObject healthBarPrefab;
     //[SerializeField] private GameManager gameManager;
     public GameObject CurrentItemToPlace { get; private set; }
@@ -57,6 +59,9 @@ public class PlaceItemsDemo : MonoBehaviour
                 case MouseMode.Place:
                     HandleClickDemo(mousePosition);
                     break;
+                case MouseMode.Heal:
+                    HandleMedicine(mousePosition);
+                    break;
                 case MouseMode.Default:
                     HandlePickup(mousePosition);
                     break;
@@ -77,11 +82,12 @@ public class PlaceItemsDemo : MonoBehaviour
     // Handle item placement
     private void HandleClickDemo(Vector3 target)
     {
+        Debug.Log("Handle click");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             if (CurrentItemType == Item.ItemType.Medicine)
             {
-                HandleMedicine(target);
+                //HandleMedicine(target);
             }
             else
             {
@@ -95,22 +101,43 @@ public class PlaceItemsDemo : MonoBehaviour
 
     private void HandleMedicine(Vector3 target)
     {
-        if (target.x != Mathf.Infinity)
+        Debug.Log("Handle medicine");
+        if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
+                Debug.Log(clickableItem.name);
                 if (clickableItem.CompareTag("plant"))
                 {
                     Health plantHealth = clickableItem.GetComponentInChildren<Health>();
-                    if (plantHealth != null)
+                    if (plantHealth == null)
                     {
                         Debug.Log("ERROR: No health script in children?");
                     }
-                    plantHealth.healDamage(100f);
-                    GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
-                    GameManager.Instance.UpdateInventoryDisplay();
+                    else
+                    {
+                        plantHealth.healDamage(100f); // Heal plant
+
+                        // Update inventory
+                        GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+                        GameManager.Instance.UpdateInventoryDisplay();
+
+                        // Set mouse mode to default
+                        GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+
+                        // Destroy plague originating at plant location
+                        Collider[] hitColliders = Physics.OverlapSphere(clickableItem.transform.position, 1f);
+                        foreach (var collider in hitColliders)
+                        {
+                            if (collider.gameObject.layer == LayerMask.NameToLayer("Disease"))
+                            {
+                                Destroy(collider.gameObject);
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -134,6 +161,7 @@ public class PlaceItemsDemo : MonoBehaviour
                 if (clickableItem.CompareTag("Medicine"))
                 {
                     GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
+                    GameManager.Instance.UpdateInventoryDisplay();
                     Destroy(clickableItem);
                 }
 

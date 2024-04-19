@@ -48,6 +48,7 @@ public class Item
             case ItemType.Plant3: return "Sunflower";
             case ItemType.Decoration: return "Decoration";
             case ItemType.Tool: return "Tool";
+            case ItemType.Medicine: return "Medicine";
         }
     }
 }
