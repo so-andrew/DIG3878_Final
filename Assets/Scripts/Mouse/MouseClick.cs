@@ -121,7 +121,6 @@ public class MouseClick : MonoBehaviour
     // Handle item placement
     private void HandlePlace(Vector3 target)
     {
-        Debug.Log("Handle place");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             bool resetMousePlacementMode = false;
@@ -209,7 +208,8 @@ public class MouseClick : MonoBehaviour
                 // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
-                    GameManager.Instance.playerCurrency += 50f;
+                    GameManager.Instance.ChangePlayerCurrency(50f);
+                    GameManager.Instance.IncrementCoinCollectCounter();
                     Destroy(clickableItem);
                 }
                 // Check if item is medicine

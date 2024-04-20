@@ -25,24 +25,6 @@ public abstract class Quest
     public bool Active { get; set; }
     public bool Complete { get; set; }
     public int RewardAmount { get; set; }
-
-    public void ActivateQuest()
-    {
-        Active = true;
-    }
-    public void CompleteQuest()
-    {
-        Complete = true;
-        GameManager.Instance.playerCurrency += RewardAmount;
-        Debug.Log($"Quest {ID} completed");
-        GameManager.Instance.UpdateQuestDisplay();
-    }
-}
-
-// Tracks how many of a specific plant is placed
-public class PlaceItemQuest : Quest
-{
-    public Item.ItemType ItemType { get; set; }
     public int RequiredAmount { get; set; }
     public int PreviousAmount { get; set; }
     public int CurrentAmount { get; set; }
@@ -53,6 +35,42 @@ public class PlaceItemQuest : Quest
             return (float)CurrentAmount / RequiredAmount;
         }
     }
+
+    public void ActivateQuest()
+    {
+        Active = true;
+    }
+
+    public void SetCurrentProgress(int amount)
+    {
+        bool doUpdate = Active && amount > CurrentAmount;
+        PreviousAmount = CurrentAmount;
+        CurrentAmount = amount;
+        if (doUpdate)
+        {
+            UpdateQuestPopup();
+            GameManager.Instance.UpdateQuestDisplay();
+        }
+    }
+
+    public void UpdateQuestPopup()
+    {
+        GameManager.Instance.questPopup.PushNewQuest(new QuestNotification(DisplayName, CurrentAmount, RequiredAmount));
+    }
+
+    public void CompleteQuest()
+    {
+        Complete = true;
+        GameManager.Instance.ChangePlayerCurrency(RewardAmount);
+        Debug.Log($"Quest {ID} completed");
+        GameManager.Instance.UpdateQuestDisplay();
+    }
+}
+
+// Tracks how many of a specific plant is placed
+public class PlaceItemQuest : Quest
+{
+    public Item.ItemType ItemType { get; set; }
     public PlaceItemQuest(string id, string displayName, int level, Item.ItemType type, int requiredAmount, int rewardAmount, bool active = true)
     {
         ID = id;
@@ -64,41 +82,11 @@ public class PlaceItemQuest : Quest
         Active = active;
         Complete = false;
     }
-
-    public void UpdateQuestPopup()
-    {
-        GameManager.Instance.questPopup.PushNewQuest(new QuestNotification(DisplayName, CurrentAmount, RequiredAmount));
-    }
-
-    public void SetCurrentProgress(int amount)
-    {
-        bool doUpdate = false;
-        if (amount > CurrentAmount) doUpdate = true;
-
-        PreviousAmount = CurrentAmount;
-        CurrentAmount = amount;
-        if (doUpdate)
-        {
-            UpdateQuestPopup();
-            GameManager.Instance.UpdateQuestDisplay();
-        }
-    }
 }
 
 // Tracks how many times a players heals any plant
 public class HealQuest : Quest
 {
-    public int RequiredAmount { get; set; }
-    public int PreviousAmount { get; set; }
-    public int CurrentAmount { get; set; }
-    public float CompletionPercentage
-    {
-        get
-        {
-            return (float)CurrentAmount / RequiredAmount;
-        }
-    }
-
     public HealQuest(string id, string displayName, int level, int requiredAmount, int rewardAmount, bool active = true)
     {
         ID = id;
@@ -109,24 +97,19 @@ public class HealQuest : Quest
         Active = active;
         Complete = false;
     }
+}
 
-    public void UpdateQuestPopup()
+public class CoinCollectQuest : Quest
+{
+    public CoinCollectQuest(string id, string displayName, int level, int requiredAmount, int rewardAmount, bool active = true)
     {
-        GameManager.Instance.questPopup.PushNewQuest(new QuestNotification(DisplayName, CurrentAmount, RequiredAmount));
-    }
-
-    public void SetCurrentProgress(int amount)
-    {
-        bool doUpdate = false;
-        if (amount > CurrentAmount) doUpdate = true;
-
-        PreviousAmount = CurrentAmount;
-        CurrentAmount = amount;
-        if (doUpdate)
-        {
-            UpdateQuestPopup();
-            GameManager.Instance.UpdateQuestDisplay();
-        }
+        ID = id;
+        DisplayName = displayName;
+        Level = level;
+        RequiredAmount = requiredAmount;
+        RewardAmount = rewardAmount;
+        Active = active;
+        Complete = false;
     }
 }
 
@@ -147,6 +130,9 @@ public class QuestManager : MonoBehaviour
         Quests.Add(new HealQuest("Heal_Lv1", "Heal plants 1 time.", 1, 1, 100));
         Quests.Add(new HealQuest("Heal_Lv2", "Heal plants 5 times.", 2, 5, 250, false));
         Quests.Add(new HealQuest("Heal_Lv3", "Heal plants 10 times.", 3, 10, 500, false));
+        Quests.Add(new CoinCollectQuest("CoinCollect_Lv1", "Collect 5 coins.", 1, 5, 100));
+        Quests.Add(new CoinCollectQuest("CoinCollect_Lv2", "Collect 10 coins.", 2, 10, 200, false));
+        Quests.Add(new CoinCollectQuest("CoinCollect_Lv3", "Collect 20 coins.", 3, 20, 300, false));
     }
 
     void Update()
@@ -178,9 +164,8 @@ public class QuestManager : MonoBehaviour
         {
             if (quest.Complete) continue;
             // Place items quest
-            if (quest.Active && quest is PlaceItemQuest quest1)
+            if (quest is PlaceItemQuest quest1)
             {
-                ;
                 Item.ItemType type = quest1.ItemType;
                 // Check if spawned amount >= required amount
                 int currentSpawnTotal = GameManager.Instance.GetSpawnedTotal(type);
@@ -188,23 +173,39 @@ public class QuestManager : MonoBehaviour
                 if (quest1.CompletionPercentage >= 1.0)
                 {
                     quest1.CompleteQuest();
+                    ActivateNextQuestInLine(quest1);
                 }
             }
             // Healing quest
-            else if (quest.Active && quest is HealQuest quest2)
+            else if (quest is HealQuest quest2)
             {
                 int healCount = GameManager.Instance.HealCount;
                 quest2.SetCurrentProgress(healCount);
                 if (quest2.CompletionPercentage >= 1.0)
                 {
                     quest2.CompleteQuest();
-                    var nextQuests = Quests.Where(nextQuest => nextQuest.ID == $"Heal_Lv{quest2.Level + 1}"); ;
-                    foreach (Quest q in nextQuests)
-                    {
-                        q.ActivateQuest();
-                    }
+                    ActivateNextQuestInLine(quest2);
                 }
             }
+            else if (quest is CoinCollectQuest quest3)
+            {
+                int coinCount = GameManager.Instance.CoinCollectedCount;
+                quest3.SetCurrentProgress(coinCount);
+                if (quest3.CompletionPercentage >= 1.0)
+                {
+                    quest3.CompleteQuest();
+                    ActivateNextQuestInLine(quest3);
+                }
+            }
+        }
+    }
+
+    private void ActivateNextQuestInLine(Quest quest)
+    {
+        var nextQuests = Quests.Where(nextQuest => nextQuest.ID == $"{quest.ID[..quest.ID.LastIndexOf("_")]}_Lv{quest.Level + 1}"); ;
+        foreach (Quest q in nextQuests)
+        {
+            q.ActivateQuest();
         }
     }
 }

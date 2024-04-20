@@ -25,18 +25,7 @@ public class InventoryButtonHover : MonoBehaviour
 
     private bool ShouldSetToPreviousMouseMode()
     {
-        // bool returnValue = false;
-        // if (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Heal)
-        // {
-        //     returnValue = true;
-        // }
-        // if (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Place)
-        // {
-        //     returnValue = true;
-        // }
-        // return returnValue;
-
-        return (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Heal) || (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Place);
-        //return true;
+        return GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.CurrentMouseMode != GameManager.Instance.PreviousMouseMode;
+        //return (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Heal) || (GameManager.Instance.CurrentMouseMode == MouseMode.UI && GameManager.Instance.PreviousMouseMode == MouseMode.Place);
     }
 }

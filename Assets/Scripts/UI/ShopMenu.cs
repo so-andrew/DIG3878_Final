@@ -7,36 +7,54 @@ using Unity.VisualScripting;
 
 public class ShopMenu : MonoBehaviour
 {
-    private Transform container;
+    [SerializeField] private Transform container;
     private Transform itemTemplate;
 
     void Awake()
     {
-        container = transform.Find("Container");
+        //container = transform.Find("Container");
         itemTemplate = container.Find("ShopItemTemplate");
         itemTemplate.gameObject.SetActive(false);
     }
 
     void Start()
     {
-        int positionIndex;
-        Item.ItemType[] itemTypes = { Item.ItemType.Plant1, Item.ItemType.Plant2, Item.ItemType.Plant3 };
-        for (positionIndex = 0; positionIndex < 3; positionIndex++)
-        {
-            CreateItemButton(Item.GetItemName(itemTypes[positionIndex]), itemTypes[positionIndex], Item.GetCost(itemTypes[positionIndex]), positionIndex);
-        }
-        //CreateItemButton($"Tool {positionIndex}", Item.ItemType.Plant, Item.GetCost(Item.ItemType.Tool), positionIndex);
 
+        GenerateShop();
     }
 
-    private void CreateItemButton(string name, Item.ItemType type, int cost, int positionIndex)
+    public void GenerateShop()
     {
-        Transform itemTransform = Instantiate(itemTemplate, container);
-        RectTransform itemRectTransform = itemTransform.GetComponent<RectTransform>();
+        if (container == null) return;
+        GameObject[] containerChildren = new GameObject[container.childCount];
+        int i = 0;
+        foreach (Transform child in container)
+        {
+            if (child.gameObject.name != "ShopItemTemplate")
+            {
+                containerChildren[i] = child.gameObject;
+                i++;
+            }
+        }
 
-        float itemHeight = 225f;
-        float verticalOffset = 350f;
-        itemRectTransform.anchoredPosition = new Vector2(0, (-itemHeight * positionIndex) + verticalOffset);
+        foreach (GameObject obj in containerChildren)
+        {
+            Destroy(obj);
+        }
+
+        Item.ItemType[] itemTypes = { Item.ItemType.Plant1, Item.ItemType.Plant2, Item.ItemType.Plant3 };
+        foreach (Item.ItemType itemType in itemTypes)
+        {
+            CreateItemButton(itemType);
+        }
+    }
+
+    private void CreateItemButton(Item.ItemType type)
+    {
+        string name = Item.GetItemName(type);
+        int cost = Item.GetCost(type);
+
+        Transform itemTransform = Instantiate(itemTemplate, container);
         Transform itemName = itemTransform.Find("ItemName");
         itemName.GetComponent<TMP_Text>().text = name;
 
@@ -50,6 +68,9 @@ public class ShopMenu : MonoBehaviour
         {
             itemPrice.GetComponent<TMP_Text>().color = Color.white;
         }
+
+        Transform itemImg = itemTransform.Find("ItemImg");
+        itemImg.GetComponent<Image>().sprite = Item.GetSprite(type);
 
         itemTransform.GetComponent<Button>().onClick.AddListener(() => TryBuyItem(type));
         itemTransform.gameObject.SetActive(true);
@@ -66,7 +87,7 @@ public class ShopMenu : MonoBehaviour
         }
 
         // Remove currency from user
-        GameManager.Instance.playerCurrency -= itemCost;
+        GameManager.Instance.ChangePlayerCurrency(-1.0f * itemCost);
 
         // Add to inventory
         // TODO: Allow user to purchase quantity > 1
@@ -74,13 +95,9 @@ public class ShopMenu : MonoBehaviour
         Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryItemAmount(itemType)}");
         UpdateShopDisplay();
         GameManager.Instance.UpdateInventoryDisplay();
-
-        // GameManager.Instance.ItemPlacer.currentItemToPlace = Item.GetGameObject(itemType);
-        // GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
-        // GameManager.Instance.HideShopUI();
     }
 
-    private void UpdateShopDisplay()
+    public void UpdateShopDisplay()
     {
         foreach (Transform child in container)
         {

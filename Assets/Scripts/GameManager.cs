@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -46,10 +47,13 @@ public class GameManager : MonoBehaviour
 
     // Public get, private set variables
     public int HealCount { get; private set; }
+    public int CoinCollectedCount { get; private set; }
+    public GameObject SelectedButton { get; private set; }
     public MouseMode CurrentMouseMode { get; private set; }
     public MouseMode PreviousMouseMode { get; private set; }
     public TMP_Text mouseModeDisplay;
     public TMP_Text previousMouseModeDisplay;
+
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -85,9 +89,9 @@ public class GameManager : MonoBehaviour
         int childCount = placedItemParent.childCount;
         int lowHealthPlants = 0;
 
+        // Check how many of them are low health
         foreach (Transform child in placedItemParent)
         {
-            //Debug.Log(child.gameObject.name);
             Health childHealthScript = child.GetComponentInChildren<Health>();
             if (childHealthScript.health < childHealthScript.maxHealth * 0.25f)
             {
@@ -97,11 +101,9 @@ public class GameManager : MonoBehaviour
         //if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
 
         float netHealthChange = 0;
-
         if (childCount > 0)
         {
             float amountDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
-
             float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
 
             //Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
@@ -172,12 +174,21 @@ public class GameManager : MonoBehaviour
             spawnedItems.Add(type, 1);
         }
     }
-
     public void IncrementHealCounter()
     {
         HealCount += 1;
     }
 
+    public void IncrementCoinCollectCounter()
+    {
+        CoinCollectedCount += 1;
+    }
+
+    public void ChangePlayerCurrency(float amount)
+    {
+        playerCurrency = Mathf.Max(0, playerCurrency + amount);
+        UpdateShopDisplay();
+    }
     // Return how many of x item has been placed
     public int GetSpawnedTotal(Item.ItemType type)
     {
@@ -198,27 +209,41 @@ public class GameManager : MonoBehaviour
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
         // Debug.Log($"Setting mouse mode to {mouseMode}, current = {CurrentMouseMode}, previous = {PreviousMouseMode}");
-        // TODO: Logic checks
-        if (CurrentMouseMode != MouseMode.UI)
-        {
-            PreviousMouseMode = CurrentMouseMode;
-        }
+        // Supposed to prevent mousemode being stuck on UI
+        if (CurrentMouseMode != MouseMode.UI) PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = mouseMode;
     }
 
-    public void SetCurrentMouseModeOverride(MouseMode mouseMode)
-    {
-        CurrentMouseMode = mouseMode;
-    }
-
+    // Called when mouse enters UI button
     public void ButtonHoverEnter()
     {
         SetCurrentMouseMode(MouseMode.UI);
     }
 
+    // Called when mouse enters UI button
     public void ButtonHoverExit()
     {
         SetCurrentMouseMode(PreviousMouseMode);
+    }
+
+    public void SetSelectedButton(GameObject button)
+    {
+        Debug.Log($"Button = {button}");
+        if (SelectedButton != null)
+        {
+            SelectedButton.transform.Find("Background").GetComponent<Image>().color = Color.white;
+        }
+        SelectedButton = button;
+        SelectedButton.transform.Find("Background").GetComponent<Image>().color = new Color32(182, 226, 140, 255);
+    }
+
+    public void ClearSelectedButton()
+    {
+        if (SelectedButton != null)
+        {
+            SelectedButton.transform.Find("Background").GetComponent<Image>().color = Color.white;
+        }
+        SelectedButton = null;
     }
 
     // Set shop UI active
@@ -244,13 +269,14 @@ public class GameManager : MonoBehaviour
     {
         inventoryUIActive = true;
         mainUIActive = !inventoryUIActive;
-        CurrentMouseMode = MouseMode.UI;
+        CurrentMouseMode = MouseMode.Default;
         ToggleUI();
     }
 
     // Set inventory UI inactive
     public void HideInventoryUI()
     {
+        ClearSelectedButton();
         inventoryUIActive = false;
         mainUIActive = !inventoryUIActive;
         CurrentMouseMode = MouseMode.Default;
@@ -294,6 +320,11 @@ public class GameManager : MonoBehaviour
     public void UpdateQuestDisplay()
     {
         questUI.GetComponent<QuestMenu>().GenerateQuests();
+    }
+
+    public void UpdateShopDisplay()
+    {
+        shopUI.GetComponent<ShopMenu>().GenerateShop();
     }
 
     // Update HealthUI
