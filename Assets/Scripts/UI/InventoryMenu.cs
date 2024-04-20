@@ -78,11 +78,11 @@ public class InventoryMenu : MonoBehaviour
         GameManager.Instance.MouseClickHandler.SetCurrentItem(itemType);
         if (itemType == Item.ItemType.Medicine)
         {
-            GameManager.Instance.SetCurrentMouseMode(MouseMode.Heal);
+            GameManager.Instance.SetPreviousMouseMode(MouseMode.Heal);
         }
         else
         {
-            GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
+            GameManager.Instance.SetPreviousMouseMode(MouseMode.Place);
         }
     }
 }

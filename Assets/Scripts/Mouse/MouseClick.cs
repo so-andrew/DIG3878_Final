@@ -41,7 +41,7 @@ public class MouseClick : MonoBehaviour
     void Update()
     {
         // Show indicator if in place mode
-        //indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
+        indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
         // Use raycast to get mouse position
         Vector3 mousePosition;
@@ -101,7 +101,7 @@ public class MouseClick : MonoBehaviour
                 {
                     if (clickableItem.CompareTag("plant"))
                     {
-                        Cursor.SetCursor(medicineCursor, new Vector2(3, 3), CursorMode.Auto);
+                        Cursor.SetCursor(medicineCursor, new Vector2(5, 5), CursorMode.Auto);
                     }
                     else Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
                 }
@@ -118,27 +118,18 @@ public class MouseClick : MonoBehaviour
         }
     }
 
-    private void SetCursorType(string cursorType)
-    {
-        switch (cursorType)
-        {
-            case "Pickup":
-                Cursor.SetCursor(pickupCursor, new Vector2(3, 3), CursorMode.Auto);
-                break;
-            case "Medicine":
-                Cursor.SetCursor(medicineCursor, new Vector2(3, 3), CursorMode.Auto);
-                break;
-            default:
-                Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
-                break;
-        }
-    }
-
     // Handle item placement
     private void HandlePlace(Vector3 target)
     {
+        Debug.Log("Handle place");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
+            bool resetMousePlacementMode = false;
+            if (GameManager.Instance.GetInventoryItemAmount(CurrentItemType) == 1)
+            {
+                resetMousePlacementMode = true;
+            }
+
             // Update inventory
             GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
             GameManager.Instance.UpdateInventoryDisplay();
@@ -149,6 +140,12 @@ public class MouseClick : MonoBehaviour
 
             // Increment spawn counter
             GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
+
+            // If there are no more of current item, reset mouse mode to default
+            if (resetMousePlacementMode)
+            {
+                GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+            }
         }
     }
 

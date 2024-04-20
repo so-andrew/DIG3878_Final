@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
     public int HealCount { get; private set; }
     public MouseMode CurrentMouseMode { get; private set; }
     public MouseMode PreviousMouseMode { get; private set; }
+    public TMP_Text mouseModeDisplay;
+    public TMP_Text previousMouseModeDisplay;
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -73,6 +75,8 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         TrackGameHealth();
+        mouseModeDisplay.text = CurrentMouseMode.ToString();
+        previousMouseModeDisplay.text = PreviousMouseMode.ToString();
     }
 
     private void TrackGameHealth()
@@ -184,11 +188,26 @@ public class GameManager : MonoBehaviour
         return 0;
     }
 
+    public void SetPreviousMouseMode(MouseMode mouseMode)
+    {
+        // Debug.Log($"Setting previous to {mouseMode}");
+        PreviousMouseMode = mouseMode;
+    }
+
     // Set current mouse mode
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
+        // Debug.Log($"Setting mouse mode to {mouseMode}, current = {CurrentMouseMode}, previous = {PreviousMouseMode}");
         // TODO: Logic checks
-        PreviousMouseMode = CurrentMouseMode;
+        if (CurrentMouseMode != MouseMode.UI)
+        {
+            PreviousMouseMode = CurrentMouseMode;
+        }
+        CurrentMouseMode = mouseMode;
+    }
+
+    public void SetCurrentMouseModeOverride(MouseMode mouseMode)
+    {
         CurrentMouseMode = mouseMode;
     }
 
