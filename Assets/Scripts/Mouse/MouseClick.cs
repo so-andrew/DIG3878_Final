@@ -21,22 +21,27 @@ public class MouseClick : MonoBehaviour
     [SerializeField] private LayerMask clickableLayerMask;
     [SerializeField] private LayerMask diseaseLayerMask;
     [SerializeField] private GameObject healthBarPrefab;
+
     //[SerializeField] private GameManager gameManager;
     public GameObject CurrentItemToPlace { get; private set; }
     public Item.ItemType CurrentItemType { get; private set; }
 
     private MeshRenderer indicator;
+    public Texture2D defaultCursor;
+    public Texture2D pickupCursor;
+    public Texture2D medicineCursor;
 
     void Start()
     {
         if (!mainCamera) Debug.Log("No camera assigned in PlaceItemsDemo");
         indicator = GetComponent<MeshRenderer>();
+        Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
     }
 
     void Update()
     {
         // Show indicator if in place mode
-        indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
+        //indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
         // Use raycast to get mouse position
         Vector3 mousePosition;
@@ -49,6 +54,7 @@ public class MouseClick : MonoBehaviour
             mousePosition = DefaultRaycastCheck();
         }
 
+        HandleCursor();
         MoveCursor(mousePosition);
 
         // Handle input
@@ -57,7 +63,7 @@ public class MouseClick : MonoBehaviour
             switch (GameManager.Instance.CurrentMouseMode)
             {
                 case MouseMode.Place:
-                    HandleClickDemo(mousePosition);
+                    HandlePlace(mousePosition);
                     break;
                 case MouseMode.Heal:
                     HandleMedicine(mousePosition);
@@ -79,10 +85,58 @@ public class MouseClick : MonoBehaviour
         }
     }
 
-    // Handle item placement
-    private void HandleClickDemo(Vector3 target)
+    private void HandleCursor()
     {
-        //Debug.Log("Handle click");
+        if (GameManager.Instance.CurrentMouseMode == MouseMode.UI)
+        {
+            Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+        }
+        else
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
+                GameObject clickableItem = raycastHit.transform.gameObject;
+                if (GameManager.Instance.CurrentMouseMode == MouseMode.Heal)
+                {
+                    if (clickableItem.CompareTag("plant"))
+                    {
+                        Cursor.SetCursor(medicineCursor, new Vector2(3, 3), CursorMode.Auto);
+                    }
+                    else Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+                }
+                else if (GameManager.Instance.CurrentMouseMode == MouseMode.Default)
+                {
+                    if (clickableItem.CompareTag("Money") || clickableItem.CompareTag("Medicine"))
+                    {
+                        Cursor.SetCursor(pickupCursor, new Vector2(5, 5), CursorMode.Auto);
+                    }
+                    else Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+                }
+            }
+            else Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+        }
+    }
+
+    private void SetCursorType(string cursorType)
+    {
+        switch (cursorType)
+        {
+            case "Pickup":
+                Cursor.SetCursor(pickupCursor, new Vector2(3, 3), CursorMode.Auto);
+                break;
+            case "Medicine":
+                Cursor.SetCursor(medicineCursor, new Vector2(3, 3), CursorMode.Auto);
+                break;
+            default:
+                Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+                break;
+        }
+    }
+
+    // Handle item placement
+    private void HandlePlace(Vector3 target)
+    {
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             // Update inventory
@@ -153,7 +207,7 @@ public class MouseClick : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                Debug.Log(clickableItem.name);
+                //Debug.Log(clickableItem.name);
 
                 // Check if item is money
                 if (clickableItem.CompareTag("Money"))
