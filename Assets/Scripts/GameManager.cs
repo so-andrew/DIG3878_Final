@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     public GameObject shopUI;
     public GameObject inventoryUI;
     public GameObject questUI;
-    public GameObject questPopup;
+    public QuestPopup questPopup;
     public HealthUI healthUI;
 
     [Header("Player Currency")]
@@ -56,10 +56,6 @@ public class GameManager : MonoBehaviour
     private bool mainUIActive = true;
     private bool inventoryUIActive = false;
     private bool questUIActive = false;
-    private bool questPopupActive = false;
-    private float questPopupDesiredAlpha = 0f;
-    private float questPopupCurrentAlpha = 0f;
-    private float questPopupDisplayTime = 0f;
 
     void Start()
     {
@@ -68,7 +64,6 @@ public class GameManager : MonoBehaviour
         mainUI.SetActive(mainUIActive);
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
-        questPopup.SetActive(questPopupActive);
 
         // Initialize game variables
         CurrentMouseMode = MouseMode.Default;
@@ -78,7 +73,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         TrackGameHealth();
-        DecrementQuestPopupTimer();
     }
 
     private void TrackGameHealth()
@@ -96,19 +90,17 @@ public class GameManager : MonoBehaviour
                 lowHealthPlants++;
             }
         }
-        if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
+        //if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
 
         float netHealthChange = 0;
 
         if (childCount > 0)
         {
             float amountDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
-            //if (amountDecrease > 0) Debug.Log("amountDecrease = " + amountDecrease);
 
             float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
-            //if (amountIncrease > 0) Debug.Log("amountIncrease = " + amountIncrease);
 
-            Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
+            //Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
             netHealthChange = amountIncrease - amountDecrease;
             gameHealth = Mathf.Min(100f, gameHealth + netHealthChange);
         }
@@ -273,75 +265,6 @@ public class GameManager : MonoBehaviour
         questUI.SetActive(questUIActive);
     }
 
-    // Set quest popup active for 5 seconds
-    public void DisplayQuestPopup(string displayText, int progressAmount, int requiredAmount)
-    {
-        Transform questText = questPopup.transform.Find("QuestText");
-        questText.GetComponent<TMP_Text>().text = displayText;
-
-        GameObject completionPercentageText = questPopup.transform.Find("CompletionPercent").gameObject;
-        GameObject completionImage = questPopup.transform.Find("CompleteImage").gameObject;
-        float completionPercentage = progressAmount / requiredAmount;
-        //Debug.Log("Percentage = " + completionPercentage);
-
-        completionPercentageText.GetComponent<TMP_Text>().text = $"{progressAmount}/{requiredAmount}";
-
-        if (completionPercentage >= 1.0)
-        {
-            completionPercentageText.SetActive(false);
-            completionImage.SetActive(true);
-        }
-        else
-        {
-            completionPercentageText.SetActive(true);
-            completionImage.SetActive(false);
-        }
-
-        // Activate quest popup for 5 seconds
-        questPopupActive = true;
-        questPopup.SetActive(questPopupActive);
-        questPopupDisplayTime = 5.0f;
-        questPopupDesiredAlpha = 1.0f;
-    }
-
-    // Helper function to fade quest popup in/out
-    public void SetQuestPopupAlpha()
-    {
-        if (questPopupCurrentAlpha != questPopupDesiredAlpha)
-        {
-            questPopupCurrentAlpha = Mathf.MoveTowards(questPopupCurrentAlpha, questPopupDesiredAlpha, 2.0f * Time.deltaTime);
-            foreach (Transform child in questPopup.transform)
-            {
-                if (child.GetComponent<Image>() != null)
-                {
-                    Color currentColor = child.GetComponent<Image>().color;
-                    child.GetComponent<Image>().color = new Color(currentColor.r, currentColor.g, currentColor.b, questPopupCurrentAlpha);
-                }
-                else if (child.GetComponent<TMP_Text>() != null)
-                {
-                    Color currentColor = child.GetComponent<TMP_Text>().color;
-                    child.GetComponent<TMP_Text>().color = new Color(currentColor.r, currentColor.g, currentColor.b, questPopupCurrentAlpha);
-                }
-            }
-        }
-    }
-
-    // Decrements quest popup timer every frame; called in Update()
-    private void DecrementQuestPopupTimer()
-    {
-        // Quest popup display timer
-        if (questPopupDisplayTime > 0f)
-        {
-            questPopupDisplayTime -= Time.deltaTime;
-        }
-        else
-        {
-            questPopupActive = false;
-            questPopupDesiredAlpha = 0f;
-        }
-        SetQuestPopupAlpha();
-    }
-
     // Call InventoryMenu.GenerateButtons()
     public void UpdateInventoryDisplay()
     {
@@ -354,6 +277,7 @@ public class GameManager : MonoBehaviour
         questUI.GetComponent<QuestMenu>().GenerateQuests();
     }
 
+    // Update HealthUI
     private void UpdateHealthSlider(float change)
     {
         healthUI.ToggleGainIndicator(change);

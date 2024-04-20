@@ -50,7 +50,7 @@ public class PlaceItemQuest : Quest
     {
         get
         {
-            return CurrentAmount / RequiredAmount;
+            return (float)CurrentAmount / RequiredAmount;
         }
     }
     public PlaceItemQuest(string id, string displayName, int level, Item.ItemType type, int requiredAmount, int rewardAmount, bool active = true)
@@ -67,13 +67,13 @@ public class PlaceItemQuest : Quest
 
     public void UpdateQuestPopup()
     {
-        GameManager.Instance.DisplayQuestPopup(DisplayName, CurrentAmount, RequiredAmount);
+        GameManager.Instance.questPopup.PushNewQuest(new QuestNotification(DisplayName, CurrentAmount, RequiredAmount));
     }
 
     public void SetCurrentProgress(int amount)
     {
         bool doUpdate = false;
-        if (amount > PreviousAmount) doUpdate = true;
+        if (amount > CurrentAmount) doUpdate = true;
 
         PreviousAmount = CurrentAmount;
         CurrentAmount = amount;
@@ -95,7 +95,7 @@ public class HealQuest : Quest
     {
         get
         {
-            return CurrentAmount / RequiredAmount;
+            return (float)CurrentAmount / RequiredAmount;
         }
     }
 
@@ -112,13 +112,13 @@ public class HealQuest : Quest
 
     public void UpdateQuestPopup()
     {
-        GameManager.Instance.DisplayQuestPopup(DisplayName, CurrentAmount, RequiredAmount);
+        GameManager.Instance.questPopup.PushNewQuest(new QuestNotification(DisplayName, CurrentAmount, RequiredAmount));
     }
 
     public void SetCurrentProgress(int amount)
     {
         bool doUpdate = false;
-        if (amount > PreviousAmount) doUpdate = true;
+        if (amount > CurrentAmount) doUpdate = true;
 
         PreviousAmount = CurrentAmount;
         CurrentAmount = amount;
@@ -180,6 +180,7 @@ public class QuestManager : MonoBehaviour
             // Place items quest
             if (quest.Active && quest is PlaceItemQuest quest1)
             {
+                ;
                 Item.ItemType type = quest1.ItemType;
                 // Check if spawned amount >= required amount
                 int currentSpawnTotal = GameManager.Instance.GetSpawnedTotal(type);
@@ -197,8 +198,7 @@ public class QuestManager : MonoBehaviour
                 if (quest2.CompletionPercentage >= 1.0)
                 {
                     quest2.CompleteQuest();
-                    var nextQuests = Quests.Where(nextQuest => nextQuest.ID == $"Heal_Lv{quest2.Level + 1}");
-                    Debug.Log(nextQuests);
+                    var nextQuests = Quests.Where(nextQuest => nextQuest.ID == $"Heal_Lv{quest2.Level + 1}"); ;
                     foreach (Quest q in nextQuests)
                     {
                         q.ActivateQuest();
