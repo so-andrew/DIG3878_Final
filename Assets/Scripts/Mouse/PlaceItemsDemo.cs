@@ -94,8 +94,9 @@ public class PlaceItemsDemo : MonoBehaviour
                 }
                 if (clickableItem.CompareTag("Enemy"))
                 {
-                    Destroy(clickableItem);
-                    //clickableItem.GetComponent<RandomMovement>().HandleEnemyClicked();
+                    //Destroy(clickableItem);
+                    clickableItem.GetComponent<EnemyMovement>().HandleEnemyClicked();
+                    clickableItem.GetComponent<EnemyHealth>().TakeDamage(20);
                 }
             }
         }

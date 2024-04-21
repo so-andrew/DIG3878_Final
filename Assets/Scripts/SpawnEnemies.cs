@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpawnEnemies : MonoBehaviour
 {
     [SerializeField] GameObject enemy;
+    [SerializeField] int maxEnemies;
 
     List<GameObject> enemySpawnPoints = new List<GameObject>();
     int numSpawnPoints;
@@ -25,10 +26,10 @@ public class SpawnEnemies : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= spawnInterval)
+        if (timer >= spawnInterval &&  GameObject.FindGameObjectsWithTag("Enemy").Length < maxEnemies)
         {
-            SpawnEnemy();
-            timer = 0f;
+                SpawnEnemy();
+                timer = 0f;
         }
     }
 
