@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
 
         // Initialize game variables
         CurrentMouseMode = MouseMode.Default;
+        GameSimulationActive = true;
         HealCount = 0;
     }
 
