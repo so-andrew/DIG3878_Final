@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class UI : MonoBehaviour
+public class CurrencyDisplay : MonoBehaviour
 {
     private TMP_Text playerCurrencyDisplay;
     // Start is called before the first frame update

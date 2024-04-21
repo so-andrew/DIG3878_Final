@@ -8,6 +8,7 @@ public enum MouseMode
 {
     Default,
     Place,
+    Heal,
     Remove,
     Upgrade,
     UI
@@ -18,6 +19,7 @@ public class PlaceItemsDemo : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private LayerMask clickableLayerMask;
+    [SerializeField] private LayerMask diseaseLayerMask;
     [SerializeField] private GameObject healthBarPrefab;
     //[SerializeField] private GameManager gameManager;
     public GameObject CurrentItemToPlace { get; private set; }
@@ -36,6 +38,7 @@ public class PlaceItemsDemo : MonoBehaviour
         // Show indicator if in place mode
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
+        // Use raycast to get mouse position
         Vector3 mousePosition;
         if (GameManager.Instance.CurrentMouseMode == MouseMode.Place)
         {
@@ -47,15 +50,16 @@ public class PlaceItemsDemo : MonoBehaviour
         }
 
         MoveCursor(mousePosition);
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
-        //Debug.Log(mousePosition);
+        // Handle input
         if (Input.GetMouseButtonDown(0))
         {
             switch (GameManager.Instance.CurrentMouseMode)
             {
                 case MouseMode.Place:
                     HandleClickDemo(mousePosition);
+                    break;
+                case MouseMode.Heal:
+                    HandleMedicine(mousePosition);
                     break;
                 case MouseMode.Default:
                     HandlePickup(mousePosition);
@@ -74,36 +78,79 @@ public class PlaceItemsDemo : MonoBehaviour
         }
     }
 
+    // Handle item placement
     private void HandleClickDemo(Vector3 target)
+    {
+        Debug.Log("Handle click");
+        if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
+        {
+            // Update inventory
+            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+            GameManager.Instance.UpdateInventoryDisplay();
+
+            // Spawn item
+            GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
+            Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+
+            // Increment spawn counter
+            GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
+        }
+    }
+
+    private void HandleMedicine(Vector3 target)
     {
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
-            GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
-            GameManager.Instance.UpdateInventoryDisplay();
-            GameObject placedItem = Instantiate(CurrentItemToPlace, target, Quaternion.Euler(RandomObjectRotation()), GameManager.Instance.placedItemParent);
-            Instantiate(healthBarPrefab, target, Quaternion.identity, placedItem.transform);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            {
+                GameObject clickableItem = raycastHit.transform.gameObject;
+                if (clickableItem.CompareTag("plant"))
+                {
+                    Health plantHealth = clickableItem.GetComponentInChildren<Health>();
+                    if (plantHealth == null)
+                    {
+                        Debug.Log("ERROR: No health script in children?");
+                    }
+                    else
+                    {
+                        plantHealth.healDamage(100f); // Heal plant
+
+                        // Update inventory
+                        GameManager.Instance.RemoveFromInventory(CurrentItemType, 1);
+                        GameManager.Instance.UpdateInventoryDisplay();
+
+                        // Update heal count
+                        GameManager.Instance.IncrementHealCounter();
+
+                        // Set mouse mode to default
+                        GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+
+                        // Destroy plague originating at plant location
+                        Collider[] hitColliders = Physics.OverlapSphere(clickableItem.transform.position, 1f);
+                        foreach (var collider in hitColliders)
+                        {
+                            if (collider.gameObject.layer == LayerMask.NameToLayer("Disease"))
+                            {
+                                Destroy(collider.gameObject);
+                            }
+                        }
+                    }
+
+                }
+            }
         }
     }
 
     private void HandlePickup(Vector3 target)
     {
-        Debug.Log("Handle pickup");
         if (target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            //Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
-            //Debug.Log(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                if (raycastHit.transform == null)
-                {
-                    Debug.Log("No transform here");
-                }
-                Debug.Log(raycastHit);
-                Debug.Log(raycastHit.transform);
-                Debug.Log(clickableItem);
-                Debug.Log(clickableItem.name);
+                // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
                     GameManager.Instance.playerCurrency += 50f;
@@ -114,50 +161,57 @@ public class PlaceItemsDemo : MonoBehaviour
                     //Destroy(clickableItem);
                     clickableItem.GetComponent<EnemyMovement>().HandleEnemyClicked();
                     clickableItem.GetComponent<EnemyHealth>().TakeDamage(20);
+                    // Check if item is medicine
+                }
+                else if (clickableItem.CompareTag("Medicine"))
+                {
+                    GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
+                    GameManager.Instance.UpdateInventoryDisplay();
+                    Destroy(clickableItem);
                 }
             }
-            else Debug.Log("Nothing?");
         }
-        else Debug.Log("Infinity");
     }
 
+    // Check if user has enough of current item in inventory to be placed
     private bool CanPlaceCurrentItem()
     {
         return GameManager.Instance.GetInventoryItemAmount(CurrentItemType) > 0;
     }
 
+    // Set item to be placed
     public void SetCurrentItem(Item.ItemType type)
     {
         CurrentItemType = type;
         CurrentItemToPlace = Item.GetGameObject(type);
     }
 
+    // Return random rotation vector
     private Vector3 RandomObjectRotation()
     {
         return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
     }
 
+    // Used to determine if mouse is hovering over a clickable object
     private Vector3 DefaultRaycastCheck()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue))
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
         {
             return raycastHit.point;
         }
         else
         {
-            return PlaceItemRaycastCheck();
+            return Vector3.positiveInfinity;
         }
     }
 
+    // Used to determine if mouse is hovering over ground (for placing objects)
     private Vector3 PlaceItemRaycastCheck()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, groundLayerMask))
         {
-            //Debug.DrawRay(mainCamera.transform.position, raycastHit.point, Color.red);
-            //Debug.Log(raycastHit.point);
             return raycastHit.point;
         }
         else

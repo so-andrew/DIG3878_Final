@@ -10,7 +10,8 @@ public class Item
         Plant2,
         Plant3,
         Decoration,
-        Tool
+        Tool,
+        Medicine
     }
 
     public static int GetCost(ItemType itemType)
@@ -34,6 +35,20 @@ public class Item
             case ItemType.Plant1: return GameAssets.Instance.Plant1Prefab;
             case ItemType.Plant2: return GameAssets.Instance.Plant2Prefab;
             case ItemType.Plant3: return GameAssets.Instance.Plant3Prefab;
+        }
+    }
+
+    public static string GetItemName(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            default:
+            case ItemType.Plant1: return "Hyacinth";
+            case ItemType.Plant2: return "Daffodil";
+            case ItemType.Plant3: return "Sunflower";
+            case ItemType.Decoration: return "Decoration";
+            case ItemType.Tool: return "Tool";
+            case ItemType.Medicine: return "Medicine";
         }
     }
 }

@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 3603258950968299247}
   - component: {fileID: 2954823824624447291}
   - component: {fileID: -9107278811162178105}
-  m_Layer: 0
+  - component: {fileID: -4390812689667620050}
+  m_Layer: 8
   m_Name: PP_Hyacinth_04
   m_TagString: plant
   m_Icon: {fileID: 0}
@@ -120,6 +121,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moneyPrefab: {fileID: 4232354131970254903, guid: eee136f84f0483740be78d7134743044, type: 3}
+  offset: {x: 0, y: 1, z: 0}
   minInterval: 5
   maxInterval: 10
   moneyLifetime: 5
+--- !u!136 &-4390812689667620050
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2954823824624447290}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.08902198
+  m_Height: 0.39485884
+  m_Direction: 1
+  m_Center: {x: -0.0009423256, y: 0.19456287, z: -0.0063217166}

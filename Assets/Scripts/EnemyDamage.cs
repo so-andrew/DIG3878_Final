@@ -8,7 +8,7 @@ public class EnemyDamage : MonoBehaviour
     {
         if (collider.CompareTag("plant"))
         {
-            Debug.Log("Enemy damage plant");
+            //Debug.Log("Enemy damage plant");
             DamagePlant(collider.gameObject);
         }
     }

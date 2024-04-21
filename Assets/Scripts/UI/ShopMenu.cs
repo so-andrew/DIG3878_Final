@@ -23,7 +23,7 @@ public class ShopMenu : MonoBehaviour
         Item.ItemType[] itemTypes = { Item.ItemType.Plant1, Item.ItemType.Plant2, Item.ItemType.Plant3 };
         for (positionIndex = 0; positionIndex < 3; positionIndex++)
         {
-            CreateItemButton($"Plant {positionIndex}", itemTypes[positionIndex], Item.GetCost(itemTypes[positionIndex]), positionIndex);
+            CreateItemButton(Item.GetItemName(itemTypes[positionIndex]), itemTypes[positionIndex], Item.GetCost(itemTypes[positionIndex]), positionIndex);
         }
         //CreateItemButton($"Tool {positionIndex}", Item.ItemType.Plant, Item.GetCost(Item.ItemType.Tool), positionIndex);
 
@@ -42,10 +42,12 @@ public class ShopMenu : MonoBehaviour
 
         Transform itemPrice = itemTransform.Find("ItemPrice");
         itemPrice.GetComponent<TMP_Text>().text = cost.ToString();
-        if(cost > GameManager.Instance.playerCurrency){
+        if (cost > GameManager.Instance.playerCurrency)
+        {
             itemPrice.GetComponent<TMP_Text>().color = Color.red;
         }
-        else{
+        else
+        {
             itemPrice.GetComponent<TMP_Text>().color = Color.white;
         }
 
@@ -57,7 +59,8 @@ public class ShopMenu : MonoBehaviour
     {
         int itemCost = Item.GetCost(itemType);
         // Check if user has enough funds to purchase
-        if(itemCost > GameManager.Instance.playerCurrency){
+        if (itemCost > GameManager.Instance.playerCurrency)
+        {
             // TODO: Provide visual feedback when user cannot purchase item
             return;
         }
@@ -77,22 +80,27 @@ public class ShopMenu : MonoBehaviour
         // GameManager.Instance.HideShopUI();
     }
 
-    private void UpdateShopDisplay(){
-        foreach (Transform child in container){
+    private void UpdateShopDisplay()
+    {
+        foreach (Transform child in container)
+        {
             Transform itemPrice = child.Find("ItemPrice");
             bool validInt = int.TryParse(itemPrice.GetComponent<TMP_Text>().text, out int cost);
-            if (validInt){
-                if(cost > GameManager.Instance.playerCurrency){
+            if (validInt)
+            {
+                if (cost > GameManager.Instance.playerCurrency)
+                {
                     itemPrice.GetComponent<TMP_Text>().color = Color.red;
                 }
-                else{
+                else
+                {
                     itemPrice.GetComponent<TMP_Text>().color = Color.white;
                 }
             }
-            else {
+            else
+            {
                 Debug.LogError("Cost string is not int");
             }
-
         }
     }
 }

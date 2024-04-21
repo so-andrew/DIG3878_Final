@@ -49,6 +49,16 @@ public class RandomMovement : MonoBehaviour
         result = Vector3.zero;
         return false;
     }
-
+    IEnumerator DelayTheNextMovement()
+    {
+        //print(Time.time);
+        yield return new WaitForSeconds(5);
+        Vector3 point;
+        if (RandomPoint(centrePoint.position, range, out point)) //pass in our centre point and radius of area
+        {
+            Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
+            agent.SetDestination(point);
+        }
+    }
 
 }

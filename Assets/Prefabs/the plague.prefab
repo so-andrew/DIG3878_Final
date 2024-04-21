@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8963529445812911044}
   - component: {fileID: -2051464186683052468}
   - component: {fileID: 5647233096985079149}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: the plague
   m_TagString: Untagged
   m_Icon: {fileID: 0}
