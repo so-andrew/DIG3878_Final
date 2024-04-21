@@ -89,11 +89,8 @@ public class GameManager : MonoBehaviour
     {
         TrackGameHealth();
         CheckIfWin();
-        if (mouseModeDisplay && previousMouseModeDisplay)
-        {
-            mouseModeDisplay.text = CurrentMouseMode.ToString();
-            previousMouseModeDisplay.text = PreviousMouseMode.ToString();
-        }
+        mouseModeDisplay.text = CurrentMouseMode.ToString();
+        previousMouseModeDisplay.text = PreviousMouseMode.ToString();
     }
 
     private void CheckIfWin()
