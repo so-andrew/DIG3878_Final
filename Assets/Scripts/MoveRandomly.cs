@@ -15,7 +15,8 @@ public class RandomMovement : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        centrePoint = GetComponent<Transform>();
+        //centrePoint = GetComponent<Transform>();
+        centrePoint = GameObject.Find("CenterPoint").GetComponent<Transform>();
     }
 
 

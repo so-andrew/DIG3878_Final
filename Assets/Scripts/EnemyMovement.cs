@@ -8,99 +8,114 @@ using static UnityEngine.GraphicsBuffer;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public NavMeshAgent agent;
-    public float range; //radius of sphere
+    [SerializeField] NavMeshAgent agent;
+    [SerializeField] float range; //radius of sphere
+    [SerializeField] GameObject point;
+    [SerializeField] float damageInterval;
+    [SerializeField] float randomInterval;
 
-    public Transform centrePoint; //centre of the area the agent wants to move around in
+    Transform centrePoint; //centre of the area the agent wants to move around in
     //instead of centrePoint you can set it as the transform of the agent if you don't care about a specific area
-
-    /*bool randomMove = true;
-    int randomMoveCount = 0;
-    bool targetMove = false;
-    GameObject targetPlant;*/
+    bool randomMove = false;
+    bool targetMove = true;
+    GameObject targetPlant;
+    float timer = 0f;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         centrePoint = GetComponent<Transform>();
+       // centrePoint = point.GetComponent<Transform>();
     }
 
 
     void Update()
     {
 
-        if (agent.remainingDistance <= agent.stoppingDistance) //done with path
-        {
-            NextRandomMovement();
-        }
-
-        /*if (randomMove)
+        if (randomMove)
         {
             Debug.Log("Random movement");
+           
             if (agent.remainingDistance <= agent.stoppingDistance) //done with path and still has paths to go
             {
-                if (randomMoveCount <= 1000)
+                
+                timer += Time.deltaTime;
+                
+                if (timer >= randomInterval)
                 {
-                    NextRandomMovement();
-                    randomMoveCount++;
-                    Debug.Log("next random point");
+                    //Debug.Log("Random Movement End");
+                    timer = 0f;
+                    randomMove = false;
+                    targetMove = true;
+                    targetPlant = null;
                 }
                 else
                 {
-                    randomMove = false;
-                    targetMove = true;
-                    randomMoveCount = 0;
-                    targetPlant = null;
-                    Debug.Log("Random movement over");
+                    //Debug.Log("Random Movement");
+                    NextRandomMovement();
                 }
-                NextRandomMovement();
+                
             }
-        }*/
-        /*else if (GameObject.FindGameObjectsWithTag("plant").Length <= 0)
+        }
+        else if (GameObject.FindGameObjectsWithTag("plant").Length <= 0)
         {
             Debug.Log("No plants");
             if (agent.remainingDistance <= agent.stoppingDistance) //done with path
             {
-                Debug.Log("Next Rand Move");
                 NextRandomMovement();
             }
         }
         else if (targetMove)
         {
-                NextTargetMovement();
-                Debug.Log("New plant target");
-                targetMove = false;
-        }
-        else
-        {
-        }*/
-    }
-
-    /*bool AllPlantsDead()
-    {
-        if (GameObject.FindGameObjectsWithTag("plant").Length <= 0)
-        {
-            return false;
-        }
-        else
-        {
-            foreach (GameObject plant in GameObject.FindGameObjectsWithTag("plant"))
+            Debug.Log("New plant target");
+            if (agent.remainingDistance <= agent.stoppingDistance + 2)
             {
-                if (!plant.GetComponentInChildren<Health>().isDead())
+                Vector3 point = GeneratePlantTarget();
+                
+                if (Vector3.Distance(gameObject.transform.position, targetPlant.transform.position) < 4)
                 {
-                    return false;
+                    //Debug.Log("STOP AT plant target");
+                    agent.isStopped = true;
+                    targetMove = false;
+                }
+                else
+                {
+                    NextTargetMovement(point);
                 }
             }
-            return true;
         }
-    }*/
-    /*public void HandleEnemyClicked()
+        else
+        {
+            timer += Time.deltaTime;
+            if (timer >= damageInterval)
+            {
+                //Debug.Log("STOP AT plant target ENDED");
+                agent.isStopped = false;
+                targetMove = true;
+                agent.ResetPath();
+                timer = 0f;
+            }
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
     {
-        //randomMove = true;
-        //targetMove = false;
-        Debug.Log("Enemy clicked");
-        Destroy(gameObject);
-    }*/
+        agent.ResetPath();
+        NextRandomMovement();
+    }
+
+    public void HandleEnemyClicked()
+    {
+        if(agent.isStopped)
+        {
+            agent.isStopped = false;
+        }
+        agent.ResetPath();
+        NextRandomMovement();
+        randomMove = true;
+        targetMove = false;
+
+        //Debug.Log("Enemy clicked");
+    }
 
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
     {
@@ -119,7 +134,7 @@ public class EnemyMovement : MonoBehaviour
         return false;
     }
 
-    /*bool PlantPoint(out Vector3 result)
+    bool PlantPoint(out Vector3 result)
     {
         GameObject[] plants = GameObject.FindGameObjectsWithTag("plant");
         if (plants.Length > 0)
@@ -136,18 +151,22 @@ public class EnemyMovement : MonoBehaviour
             result = Vector3.zero;
             return false;
         }
-    }*/
-    /*IEnumerator DelayTheNextRandomMovement()
+    }
+    Vector3 GeneratePlantTarget()
     {
-        print(Time.time);
-        yield return new WaitForSeconds(5);
-        Vector3 point;
-        if (RandomPoint(centrePoint.position, range, out point)) //pass in our centre point and radius of area
+        GameObject[] plants = GameObject.FindGameObjectsWithTag("plant");
+        if (plants.Length > 0)
         {
-            Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
-            agent.SetDestination(point);
+            int index = Random.Range(0, plants.Length);
+            targetPlant = plants[index];
+
+            return targetPlant.transform.position;
         }
-    }*/
+        else
+        {
+            return Vector3.zero;
+        }
+    }
 
     void NextRandomMovement()
     {
@@ -158,14 +177,10 @@ public class EnemyMovement : MonoBehaviour
             agent.SetDestination(point);
         }
     }
-    /*void NextTargetMovement()
+    void NextTargetMovement(Vector3 point)
     {
-        Vector3 point;
-        if (PlantPoint(out point))
-        {
             Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
             agent.SetDestination(point);
-        }
-    }*/
+    }
 
 }
