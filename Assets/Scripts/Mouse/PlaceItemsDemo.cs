@@ -50,7 +50,6 @@ public class PlaceItemsDemo : MonoBehaviour
         }
 
         MoveCursor(mousePosition);
-
         // Handle input
         if (Input.GetMouseButtonDown(0))
         {
@@ -100,14 +99,12 @@ public class PlaceItemsDemo : MonoBehaviour
 
     private void HandleMedicine(Vector3 target)
     {
-        Debug.Log("Handle medicine");
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                Debug.Log(clickableItem.name);
                 if (clickableItem.CompareTag("plant"))
                 {
                     Health plantHealth = clickableItem.GetComponentInChildren<Health>();
@@ -153,22 +150,25 @@ public class PlaceItemsDemo : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                Debug.Log(clickableItem.name);
-
                 // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
                     GameManager.Instance.playerCurrency += 50f;
                     Destroy(clickableItem);
                 }
-                // Check if item is medicine
+                if (clickableItem.CompareTag("Enemy"))
+                {
+                    //Destroy(clickableItem);
+                    clickableItem.GetComponent<EnemyMovement>().HandleEnemyClicked();
+                    clickableItem.GetComponent<EnemyHealth>().TakeDamage(20);
+                    // Check if item is medicine
+                }
                 else if (clickableItem.CompareTag("Medicine"))
                 {
                     GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
                     GameManager.Instance.UpdateInventoryDisplay();
                     Destroy(clickableItem);
                 }
-
             }
         }
     }
