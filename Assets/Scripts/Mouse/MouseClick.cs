@@ -30,11 +30,16 @@ public class MouseClick : MonoBehaviour
     public Texture2D defaultCursor;
     public Texture2D pickupCursor;
     public Texture2D medicineCursor;
+    private Light indicatorLight;
 
     void Start()
     {
         if (!mainCamera) Debug.Log("No camera assigned in PlaceItemsDemo");
         indicator = GetComponent<MeshRenderer>();
+        if (GameManager.Instance.level == 1)
+        {
+            indicatorLight = transform.Find("Light").GetComponent<Light>();
+        }
         Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
     }
 
@@ -42,6 +47,7 @@ public class MouseClick : MonoBehaviour
     {
         // Show indicator if in place mode
         indicator.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
+        if (GameManager.Instance.level == 1) indicatorLight.enabled = GameManager.Instance.CurrentMouseMode == MouseMode.Place;
 
         // Use raycast to get mouse position
         Vector3 mousePosition;
@@ -240,7 +246,7 @@ public class MouseClick : MonoBehaviour
     // Return random rotation vector
     private Vector3 RandomObjectRotation()
     {
-        return new Vector3(0, UnityEngine.Random.Range(0f, 360f), 0);
+        return new Vector3(0, UnityEngine.Random.Range(135f, 225f), 0);
     }
 
     // Used to determine if mouse is hovering over a clickable object
