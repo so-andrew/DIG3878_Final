@@ -44,7 +44,7 @@ public class RandomMovement : MonoBehaviour
     }
     IEnumerator DelayTheNextMovement()
     {
-        print(Time.time);
+        // print(Time.time);
         yield return new WaitForSeconds(5);
         Vector3 point;
         if (RandomPoint(centrePoint.position, range, out point)) //pass in our centre point and radius of area
