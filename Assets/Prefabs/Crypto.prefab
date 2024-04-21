@@ -233,6 +233,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: tBNB Balance Display
       objectReference: {fileID: 0}
+    - target: {fileID: 9197380651785802453, guid: 4b95ff553cedbc748b8901f30c2e6d26, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
