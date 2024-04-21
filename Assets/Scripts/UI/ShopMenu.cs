@@ -60,7 +60,7 @@ public class ShopMenu : MonoBehaviour
 
         Transform itemPrice = itemTransform.Find("ItemPrice");
         itemPrice.GetComponent<TMP_Text>().text = cost.ToString();
-        if (cost > GameManager.Instance.playerCurrency)
+        if (cost > GameManager.Instance.PlayerCurrency)
         {
             itemPrice.GetComponent<TMP_Text>().color = Color.red;
         }
@@ -80,19 +80,18 @@ public class ShopMenu : MonoBehaviour
     {
         int itemCost = Item.GetCost(itemType);
         // Check if user has enough funds to purchase
-        if (itemCost > GameManager.Instance.playerCurrency)
+        if (itemCost > GameManager.Instance.PlayerCurrency)
         {
             // TODO: Provide visual feedback when user cannot purchase item
             return;
         }
 
         // Remove currency from user
-        GameManager.Instance.ChangePlayerCurrency(-1.0f * itemCost);
+        GameManager.Instance.ChangePlayerCurrency(-itemCost);
 
         // Add to inventory
-        // TODO: Allow user to purchase quantity > 1
         GameManager.Instance.AddToInventory(itemType, 1);
-        Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryItemAmount(itemType)}");
+        //Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryItemAmount(itemType)}");
         UpdateShopDisplay();
         GameManager.Instance.UpdateInventoryDisplay();
     }
@@ -105,7 +104,7 @@ public class ShopMenu : MonoBehaviour
             bool validInt = int.TryParse(itemPrice.GetComponent<TMP_Text>().text, out int cost);
             if (validInt)
             {
-                if (cost > GameManager.Instance.playerCurrency)
+                if (cost > GameManager.Instance.PlayerCurrency)
                 {
                     itemPrice.GetComponent<TMP_Text>().color = Color.red;
                 }
