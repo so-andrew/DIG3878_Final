@@ -112,18 +112,7 @@ public class QuestMenu : MonoBehaviour
         questName.GetComponent<TMP_Text>().text = quest.DisplayName;
 
         Transform questProgress = questTransform.Find("Progress");
-        if (quest is PlaceItemQuest quest1)
-        {
-            questProgress.GetComponent<TMP_Text>().text = $"{quest1.CurrentAmount}/{quest1.RequiredAmount}";
-        }
-        else if (quest is HealQuest quest2)
-        {
-            questProgress.GetComponent<TMP_Text>().text = $"{quest2.CurrentAmount}/{quest2.RequiredAmount}";
-        }
-        else
-        {
-            questProgress.GetComponent<TMP_Text>().text = "WIP";
-        }
+        questProgress.GetComponent<TMP_Text>().text = $"{quest.CurrentAmount}/{quest.RequiredAmount}";
 
         Transform questReward = questTransform.Find("Reward");
         questReward.GetComponent<TMP_Text>().text = quest.RewardAmount.ToString();

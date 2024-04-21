@@ -15,6 +15,6 @@ public class CurrencyDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerCurrencyDisplay.text = GameManager.Instance.playerCurrency.ToString();
+        playerCurrencyDisplay.text = GameManager.Instance.PlayerCurrency.ToString();
     }
 }

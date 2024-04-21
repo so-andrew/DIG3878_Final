@@ -61,6 +61,9 @@ public class InventoryMenu : MonoBehaviour
         float horizontalOffset = -350f;
         itemRectTransform.anchoredPosition = new Vector2((itemWidth * positionIndex) + horizontalOffset, 0);
 
+        Transform img = itemTransform.Find("ItemImg");
+        img.GetComponent<Image>().sprite = Item.GetSprite(type);
+
         Transform itemQuantity = itemTransform.Find("ItemQuantity");
         itemQuantity.GetComponent<TMP_Text>().text = itemCount.ToString();
 
@@ -68,21 +71,9 @@ public class InventoryMenu : MonoBehaviour
         tooltip.GetChild(1).GetComponent<TMP_Text>().text = Item.GetItemName(type);
         tooltip.gameObject.SetActive(false);
 
-        itemTransform.GetComponent<Button>().onClick.AddListener(() => SetActiveItem(type));
-        itemTransform.gameObject.SetActive(true);
-    }
+        InventoryButtonClick click = itemTransform.GetComponent<InventoryButtonClick>();
 
-    private void SetActiveItem(Item.ItemType itemType)
-    {
-        //Debug.Log("Setting item " + itemType.ToString());
-        GameManager.Instance.ItemPlacer.SetCurrentItem(itemType);
-        if (itemType == Item.ItemType.Medicine)
-        {
-            GameManager.Instance.SetCurrentMouseMode(MouseMode.Heal);
-        }
-        else
-        {
-            GameManager.Instance.SetCurrentMouseMode(MouseMode.Place);
-        }
+        itemTransform.GetComponent<Button>().onClick.AddListener(() => click.SetActiveItem(type));
+        itemTransform.gameObject.SetActive(true);
     }
 }

@@ -10,15 +10,47 @@ public class SpawnMoney : MonoBehaviour
     [SerializeField] float maxInterval = 10f;       // Max time interval in seconds (for spawning money)
     [SerializeField] float moneyLifetime = 5f;      // Lifetime of money objects in seconds
 
+    private Health plantHealth;
+    private bool spawning = true;
+
     // Start is called before the first frame update
     void Start()
+    {
+        plantHealth = transform.GetComponentInChildren<Health>();
+        BeginSpawning();
+    }
+
+    void Update()
+    {
+        SpawnCheck();
+    }
+
+    private void SpawnCheck()
+    {
+        // If money is not currently spawning and plant is healthy enough, begin spawning
+        if (!spawning && plantHealth.health >= 80f)
+        {
+            Debug.Log("Start spawning");
+            BeginSpawning();
+            spawning = true;
+        }
+        // If money is spawning and plant is not healthy enough, stop spawning
+        else if (spawning && plantHealth.health < 80f)
+        {
+            Debug.Log("Stop spawning");
+            CancelInvoke();
+            spawning = false;
+        }
+    }
+
+    private void BeginSpawning()
     {
         InvokeRepeating("Spawn", Random.Range(minInterval, maxInterval), Random.Range(minInterval, maxInterval));
     }
 
     void Spawn()
     {
-        GameObject money = Instantiate(moneyPrefab, transform.position+offset, Quaternion.identity, transform);
+        GameObject money = Instantiate(moneyPrefab, transform.position + offset, Quaternion.identity, transform);
         Destroy(money, moneyLifetime); // Destroy the money object after moneyLifetime seconds
     }
 

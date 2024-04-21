@@ -38,6 +38,11 @@ public class Item
         }
     }
 
+    public static Sprite GetSprite(ItemType itemType)
+    {
+        return Resources.Load<Sprite>($"Sprites/{itemType}");
+    }
+
     public static string GetItemName(ItemType itemType)
     {
         switch (itemType)

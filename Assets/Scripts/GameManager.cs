@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,22 +13,54 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
-        playerCurrency = startingPlayerCurrency;
+        PlayerCurrency = startingPlayerCurrency;
     }
 
     // Public variables
-    public PlaceItemsDemo ItemPlacer;
+    [Header("Level Number")]
+    [Range(0, 1)]
+    [Tooltip("Level is zero-indexed (i.e. level = 0 is the first level).")]
+    public int level = 0;
+
+
+    [Header("Mouse Handler")]
+    [Tooltip("Script that handles mouse click functions.")]
+    public MouseClick MouseClickHandler;
+
+    [Header("Game Objects")]
+    [Tooltip("Transform that contains all placed plants.")]
     public Transform placedItemParent;
-    public MouseMode CurrentMouseMode { get; private set; }
-    public MouseMode PreviousMouseMode { get; private set; }
+
+    [Header("UI Elements")]
     public GameObject mainUI;
     public GameObject shopUI;
     public GameObject inventoryUI;
     public GameObject questUI;
-    public GameObject questPopup;
+    public QuestPopup questPopup;
+    public HealthUI healthUI;
+
+    [Header("Player Currency")]
     [SerializeField] private float startingPlayerCurrency = 500f;
-    public float playerCurrency;
+
+    [Header("Player Health")]
+    public float gameHealth = 100f;
+    public float maxPlayerHealth = 100f;
+    [Tooltip("This factor is multiplied by the percentage of sick plants to determine health drop rate.")]
+    public float healthDecreaseFactor = 1f;
+    [Tooltip("This factor is multiplied by the percentage of healthy plants to determine health regen rate.")]
+    public float healthIncreaseFactor = 0.5f;
+
+    // Public get, private set variables
+    public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
+    public int CoinCollectedCount { get; private set; }
+    public bool GameSimulationActive { get; private set; }
+    public GameObject SelectedButton { get; private set; }
+    public MouseMode CurrentMouseMode { get; private set; }
+    public MouseMode PreviousMouseMode { get; private set; }
+    public TMP_Text mouseModeDisplay;
+    public TMP_Text previousMouseModeDisplay;
+
 
     // Private variables
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
@@ -36,35 +69,97 @@ public class GameManager : MonoBehaviour
     private bool mainUIActive = true;
     private bool inventoryUIActive = false;
     private bool questUIActive = false;
-    private bool questPopupActive = false;
-    private float questPopupDesiredAlpha = 0f;
-    private float questPopupCurrentAlpha = 0f;
-    private float questPopupDisplayTime = 0f;
+    private bool gameWin = false;
 
     void Start()
     {
-        CurrentMouseMode = MouseMode.Default;
+        // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
-        questPopup.SetActive(questPopupActive);
 
+        // Initialize game variables
+        CurrentMouseMode = MouseMode.Default;
         HealCount = 0;
     }
 
     void Update()
     {
-        if (questPopupDisplayTime > 0f)
+        TrackGameHealth();
+        CheckIfWin();
+        mouseModeDisplay.text = CurrentMouseMode.ToString();
+        previousMouseModeDisplay.text = PreviousMouseMode.ToString();
+    }
+
+    private void CheckIfWin()
+    {
+        if (gameHealth > 0f && QuestManager.Instance.GetCompletedQuestCount() == QuestManager.Instance.GetTotalQuestCount())
         {
-            questPopupDisplayTime -= Time.deltaTime;
+            if (!gameWin)
+            {
+                Debug.Log("Game win");
+            }
+            gameWin = true;
+            GameSimulationActive = false;
+            LevelComplete();
         }
-        else
+    }
+
+    private void LevelComplete()
+    {
+        switch (level)
         {
-            questPopupActive = false;
-            questPopupDesiredAlpha = 0f;
+            case 0:
+                // Go to level 2 scene
+                // OR show win screen with button to go to main menu (level select)
+                break;
+            case 1:
+                // show win screen with button to go to main menu
+                break;
         }
-        SetQuestPopupAlpha();
+    }
+
+    private void GameOver()
+    {
+        // Go to game over screen
+        Debug.Log("Game over");
+    }
+
+    private void TrackGameHealth()
+    {
+        if (!GameSimulationActive) return;
+        // Get how many plants are spawned
+        int childCount = placedItemParent.childCount;
+        int lowHealthPlants = 0;
+
+        // Check how many of them are low health
+        foreach (Transform child in placedItemParent)
+        {
+            Health childHealthScript = child.GetComponentInChildren<Health>();
+            if (childHealthScript.health < childHealthScript.maxHealth * 0.25f)
+            {
+                lowHealthPlants++;
+            }
+        }
+        //if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
+
+        float netHealthChange = 0;
+        if (childCount > 0)
+        {
+            float amountDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
+            float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
+
+            //Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
+            netHealthChange = amountIncrease - amountDecrease;
+            gameHealth = Mathf.Min(100f, gameHealth + netHealthChange);
+        }
+
+        UpdateHealthSlider(netHealthChange);
+        if (gameHealth <= 0f)
+        {
+            GameOver();
+        }
     }
 
     // Add x amount of item to inventory dictionary
@@ -96,10 +191,7 @@ public class GameManager : MonoBehaviour
     // Return how many of x item player has in inventory
     public int GetInventoryItemAmount(Item.ItemType type)
     {
-        if (inventoryDict.TryGetValue(type, out int currentAmount))
-        {
-            return currentAmount;
-        }
+        if (inventoryDict.TryGetValue(type, out int currentAmount)) return currentAmount;
         return 0;
     }
 
@@ -128,37 +220,76 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Tracks number of heals
     public void IncrementHealCounter()
     {
         HealCount += 1;
     }
 
+    // Tracks number of coins collected
+    public void IncrementCoinCollectCounter()
+    {
+        CoinCollectedCount += 1;
+    }
+
+    public void ChangePlayerCurrency(float amount)
+    {
+        PlayerCurrency = Mathf.Max(0, PlayerCurrency + amount);
+        UpdateShopDisplay();
+    }
     // Return how many of x item has been placed
     public int GetSpawnedTotal(Item.ItemType type)
     {
-        if (spawnedItems.TryGetValue(type, out int currentAmount))
-        {
-            return currentAmount;
-        }
+        if (spawnedItems.TryGetValue(type, out int currentAmount)) return currentAmount;
         return 0;
+    }
+
+    public void SetPreviousMouseMode(MouseMode mouseMode)
+    {
+        // Debug.Log($"Setting previous to {mouseMode}");
+        PreviousMouseMode = mouseMode;
     }
 
     // Set current mouse mode
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
-        // TODO: Logic checks
-        PreviousMouseMode = CurrentMouseMode;
+        // Debug.Log($"Setting mouse mode to {mouseMode}, current = {CurrentMouseMode}, previous = {PreviousMouseMode}");
+        // Supposed to prevent mousemode being stuck on UI
+        if (CurrentMouseMode != MouseMode.UI) PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = mouseMode;
     }
 
+    // Called when mouse enters UI button
     public void ButtonHoverEnter()
     {
         SetCurrentMouseMode(MouseMode.UI);
     }
 
+    // Called when mouse enters UI button
     public void ButtonHoverExit()
     {
         SetCurrentMouseMode(PreviousMouseMode);
+    }
+
+    // Highlight selected button in inventory 
+    public void SetSelectedButton(GameObject button)
+    {
+        if (SelectedButton != null)
+        {
+            SelectedButton.transform.Find("Background").GetComponent<Image>().color = Color.white;
+        }
+        SelectedButton = button;
+        SelectedButton.transform.Find("Background").GetComponent<Image>().color = new Color32(182, 226, 140, 255);
+    }
+
+    // Clear selected button highlight
+    public void ClearSelectedButton()
+    {
+        if (SelectedButton != null)
+        {
+            SelectedButton.transform.Find("Background").GetComponent<Image>().color = Color.white;
+        }
+        SelectedButton = null;
     }
 
     // Set shop UI active
@@ -184,13 +315,14 @@ public class GameManager : MonoBehaviour
     {
         inventoryUIActive = true;
         mainUIActive = !inventoryUIActive;
-        CurrentMouseMode = MouseMode.UI;
+        CurrentMouseMode = MouseMode.Default;
         ToggleUI();
     }
 
     // Set inventory UI inactive
     public void HideInventoryUI()
     {
+        ClearSelectedButton();
         inventoryUIActive = false;
         mainUIActive = !inventoryUIActive;
         CurrentMouseMode = MouseMode.Default;
@@ -224,65 +356,27 @@ public class GameManager : MonoBehaviour
         questUI.SetActive(questUIActive);
     }
 
-    // Set quest popup active for 5 seconds
-    public void DisplayQuestPopup(string displayText, int progressAmount, int requiredAmount)
-    {
-        Transform questText = questPopup.transform.Find("QuestText");
-        questText.GetComponent<TMP_Text>().text = displayText;
-
-        GameObject completionPercentageText = questPopup.transform.Find("CompletionPercent").gameObject;
-        GameObject completionImage = questPopup.transform.Find("CompleteImage").gameObject;
-        float completionPercentage = progressAmount / requiredAmount;
-        //Debug.Log("Percentage = " + completionPercentage);
-
-        completionPercentageText.GetComponent<TMP_Text>().text = $"{progressAmount}/{requiredAmount}";
-
-        if (completionPercentage >= 1.0)
-        {
-            completionPercentageText.SetActive(false);
-            completionImage.SetActive(true);
-        }
-        else
-        {
-            completionPercentageText.SetActive(true);
-            completionImage.SetActive(false);
-        }
-        questPopupActive = true;
-        questPopup.SetActive(questPopupActive);
-        questPopupDisplayTime = 5.0f;
-        questPopupDesiredAlpha = 1.0f;
-    }
-
-    // Helper function to fade quest popup in/out
-    public void SetQuestPopupAlpha()
-    {
-        if (questPopupCurrentAlpha != questPopupDesiredAlpha)
-        {
-            questPopupCurrentAlpha = Mathf.MoveTowards(questPopupCurrentAlpha, questPopupDesiredAlpha, 2.0f * Time.deltaTime);
-            foreach (Transform child in questPopup.transform)
-            {
-                if (child.GetComponent<Image>() != null)
-                {
-                    Color currentColor = child.GetComponent<Image>().color;
-                    child.GetComponent<Image>().color = new Color(currentColor.r, currentColor.g, currentColor.b, questPopupCurrentAlpha);
-                }
-                else if (child.GetComponent<TMP_Text>() != null)
-                {
-                    Color currentColor = child.GetComponent<TMP_Text>().color;
-                    child.GetComponent<TMP_Text>().color = new Color(currentColor.r, currentColor.g, currentColor.b, questPopupCurrentAlpha);
-                }
-            }
-        }
-    }
-
     // Call InventoryMenu.GenerateButtons()
     public void UpdateInventoryDisplay()
     {
         inventoryUI.GetComponent<InventoryMenu>().GenerateButtons();
     }
 
+    // Call Questmenu.GenerateQuests()
     public void UpdateQuestDisplay()
     {
         questUI.GetComponent<QuestMenu>().GenerateQuests();
+    }
+
+    public void UpdateShopDisplay()
+    {
+        shopUI.GetComponent<ShopMenu>().GenerateShop();
+    }
+
+    // Update HealthUI
+    private void UpdateHealthSlider(float change)
+    {
+        healthUI.ToggleGainIndicator(change);
+        healthUI.SetSliderValue(gameHealth);
     }
 }
