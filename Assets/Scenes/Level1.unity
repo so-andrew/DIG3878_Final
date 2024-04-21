@@ -5856,6 +5856,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0c368b0deb34294eac1f94c7a6a39a0, type: 3}
+--- !u!1001 &1782330405
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910400172448963448, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9173622853042989932, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
+      propertyPath: m_Name
+      value: SceneManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d36727b7dd35d064daab92bbb1f6a728, type: 3}
 --- !u!1001 &1805216675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6619,6 +6676,7 @@ MonoBehaviour:
   gameHealth: 100
   maxPlayerHealth: 100
   healthDecreaseFactor: 1
+  criticalHealthDecreaseFactor: 2
   healthIncreaseFactor: 0.5
   mouseModeDisplay: {fileID: 2095076478}
   previousMouseModeDisplay: {fileID: 556500507}
@@ -6635,8 +6693,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plagePrefab: {fileID: 2879050820736960074, guid: e7214d57f7f984f429c87ad16b6613dd, type: 3}
-  minInterval: 30
-  maxInterval: 60
+  minInterval: 20
+  maxInterval: 40
 --- !u!114 &2067608437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6650,9 +6708,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   medicinePrefab: {fileID: 8779592798095262400, guid: b2f98c3a50530604e8eeebee395ddc73, type: 3}
-  minInterval: 5
-  maxInterval: 10
-  medsLifetime: 5
+  minInterval: 10
+  maxInterval: 20
+  medsLifetime: 10
   offset: {x: 0, y: 2, z: 0}
   boundingPlane: {fileID: 1220528973}
 --- !u!1001 &2069201673
@@ -7593,3 +7651,4 @@ SceneRoots:
   - {fileID: 1128212498}
   - {fileID: 1195355162}
   - {fileID: 1553998259}
+  - {fileID: 1782330405}
