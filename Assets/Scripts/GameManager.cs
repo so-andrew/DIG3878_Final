@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
     public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
     public int CoinCollectedCount { get; private set; }
+    public bool GameSimulationActive { get; private set; }
     public GameObject SelectedButton { get; private set; }
     public MouseMode CurrentMouseMode { get; private set; }
     public MouseMode PreviousMouseMode { get; private set; }
@@ -100,6 +101,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Game win");
             }
             gameWin = true;
+            GameSimulationActive = false;
             LevelComplete();
         }
     }
@@ -126,6 +128,7 @@ public class GameManager : MonoBehaviour
 
     private void TrackGameHealth()
     {
+        if (!GameSimulationActive) return;
         // Get how many plants are spawned
         int childCount = placedItemParent.childCount;
         int lowHealthPlants = 0;

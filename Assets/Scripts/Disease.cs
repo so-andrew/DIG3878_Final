@@ -60,6 +60,7 @@ public class Disease : MonoBehaviour
 
     void Update()
     {
+        if (!GameManager.Instance.GameSimulationActive) return;
         ExpandRadius();
 
         // Cause damage every second
