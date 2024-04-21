@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
     public float maxPlayerHealth = 100f;
     [Tooltip("This factor is multiplied by the percentage of sick plants to determine health drop rate.")]
     public float healthDecreaseFactor = 1f;
+    [Tooltip("This factor is multipled by the percentage of critically sick plants (health < 25%) to determine critical health drop rate.")]
+    public float criticalHealthDecreaseFactor = 2f;
     [Tooltip("This factor is multiplied by the percentage of healthy plants to determine health regen rate.")]
     public float healthIncreaseFactor = 0.5f;
 
@@ -63,6 +65,7 @@ public class GameManager : MonoBehaviour
 
 
     // Private variables
+    private SceneChanger sceneChanger;
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
     private Dictionary<Item.ItemType, int> spawnedItems = new Dictionary<Item.ItemType, int>();
     private bool shopUIActive = false;
@@ -73,6 +76,18 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Initialize scene changer
+        GameObject SceneManager = GameObject.FindGameObjectWithTag("SceneManager");
+        if (SceneManager)
+        {
+            sceneChanger = SceneManager.GetComponent<SceneChanger>();
+        }
+        else
+        {
+            Debug.Log("No SceneManager exists in the scene (try running from MainMenu scene)");
+        }
+
+
         // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
@@ -114,6 +129,10 @@ public class GameManager : MonoBehaviour
             case 0:
                 // Go to level 2 scene
                 // OR show win screen with button to go to main menu (level select)
+
+                // Right now this goes back to the main menu
+                sceneChanger.SceneChange("Mainmenu");
+
                 break;
             case 1:
                 // show win screen with button to go to main menu
@@ -133,14 +152,19 @@ public class GameManager : MonoBehaviour
         // Get how many plants are spawned
         int childCount = placedItemParent.childCount;
         int lowHealthPlants = 0;
+        int criticalHealthPlants = 0;
 
         // Check how many of them are low health
         foreach (Transform child in placedItemParent)
         {
             Health childHealthScript = child.GetComponentInChildren<Health>();
-            if (childHealthScript.health < childHealthScript.maxHealth * 0.25f)
+            if (childHealthScript.health < childHealthScript.maxHealth * 0.50f && childHealthScript.health > childHealthScript.maxHealth * 0.25f)
             {
                 lowHealthPlants++;
+            }
+            if (childHealthScript.health < childHealthScript.maxHealth * 0.25f)
+            {
+                criticalHealthPlants++;
             }
         }
         //if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
@@ -148,7 +172,9 @@ public class GameManager : MonoBehaviour
         float netHealthChange = 0;
         if (childCount > 0)
         {
-            float amountDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
+            float lowHealthDecrease = (float)lowHealthPlants / childCount * healthDecreaseFactor * Time.deltaTime;
+            float criticalHealthDecrease = (float)criticalHealthPlants / childCount * criticalHealthDecreaseFactor * Time.deltaTime;
+            float amountDecrease = lowHealthDecrease + criticalHealthDecrease;
             float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
 
             //Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
