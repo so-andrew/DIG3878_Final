@@ -30,14 +30,14 @@ public class SpawnMoney : MonoBehaviour
         // If money is not currently spawning and plant is healthy enough, begin spawning
         if (!spawning && plantHealth.health >= 80f)
         {
-            Debug.Log("Start spawning");
+            //Debug.Log("Start spawning");
             BeginSpawning();
             spawning = true;
         }
         // If money is spawning and plant is not healthy enough, stop spawning
         else if (spawning && plantHealth.health < 80f)
         {
-            Debug.Log("Stop spawning");
+            //Debug.Log("Stop spawning");
             CancelInvoke();
             spawning = false;
         }

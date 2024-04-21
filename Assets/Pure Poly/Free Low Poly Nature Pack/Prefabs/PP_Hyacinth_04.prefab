@@ -122,8 +122,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyPrefab: {fileID: 4232354131970254903, guid: eee136f84f0483740be78d7134743044, type: 3}
   offset: {x: 0, y: 1, z: 0}
-  minInterval: 5
-  maxInterval: 10
+  minInterval: 60
+  maxInterval: 120
   moneyLifetime: 5
 --- !u!136 &-4390812689667620050
 CapsuleCollider:

@@ -206,11 +206,12 @@ public class MouseClick : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
+                //Debug.Log($"{clickableItem.name} - {clickableItem.tag}");
 
                 // Check if item is money
                 if (clickableItem.CompareTag("Money"))
                 {
-                    GameManager.Instance.ChangePlayerCurrency(50f);
+                    GameManager.Instance.ChangePlayerCurrency(20f);
                     GameManager.Instance.IncrementCoinCollectCounter();
                     Destroy(clickableItem);
                 }
