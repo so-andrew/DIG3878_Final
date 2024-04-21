@@ -9,6 +9,7 @@ TagManager:
   - Money
   - Medicine
   - Enemy
+  - SceneManager
   layers:
   - Default
   - TransparentFX
