@@ -25,7 +25,7 @@ public class EnemyMovement : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         centrePoint = GetComponent<Transform>();
-       // centrePoint = point.GetComponent<Transform>();
+        // centrePoint = point.GetComponent<Transform>();
     }
 
 
@@ -35,12 +35,12 @@ public class EnemyMovement : MonoBehaviour
         if (randomMove)
         {
             Debug.Log("Random movement");
-           
+
             if (agent.remainingDistance <= agent.stoppingDistance) //done with path and still has paths to go
             {
-                
+
                 timer += Time.deltaTime;
-                
+
                 if (timer >= randomInterval)
                 {
                     //Debug.Log("Random Movement End");
@@ -54,12 +54,12 @@ public class EnemyMovement : MonoBehaviour
                     //Debug.Log("Random Movement");
                     NextRandomMovement();
                 }
-                
+
             }
         }
         else if (GameObject.FindGameObjectsWithTag("plant").Length <= 0)
         {
-            Debug.Log("No plants");
+            //Debug.Log("No plants");
             if (agent.remainingDistance <= agent.stoppingDistance) //done with path
             {
                 NextRandomMovement();
@@ -67,11 +67,11 @@ public class EnemyMovement : MonoBehaviour
         }
         else if (targetMove)
         {
-            Debug.Log("New plant target");
+            //Debug.Log("New plant target");
             if (agent.remainingDistance <= agent.stoppingDistance + 2)
             {
                 Vector3 point = GeneratePlantTarget();
-                
+
                 if (Vector3.Distance(gameObject.transform.position, targetPlant.transform.position) < 4)
                 {
                     //Debug.Log("STOP AT plant target");
@@ -105,7 +105,7 @@ public class EnemyMovement : MonoBehaviour
 
     public void HandleEnemyClicked()
     {
-        if(agent.isStopped)
+        if (agent.isStopped)
         {
             agent.isStopped = false;
         }
@@ -114,7 +114,7 @@ public class EnemyMovement : MonoBehaviour
         randomMove = true;
         targetMove = false;
 
-        //Debug.Log("Enemy clicked");
+        Debug.Log("Enemy clicked");
     }
 
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
@@ -179,8 +179,8 @@ public class EnemyMovement : MonoBehaviour
     }
     void NextTargetMovement(Vector3 point)
     {
-            Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
-            agent.SetDestination(point);
+        Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
+        agent.SetDestination(point);
     }
 
 }
