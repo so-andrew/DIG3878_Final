@@ -6528,6 +6528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c77848d73cbb7145bc0202d9ec30ba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 1
   MouseClickHandler: {fileID: 1072129815}
   placedItemParent: {fileID: 577485032}
   mainUI: {fileID: 1186891895}
@@ -6537,7 +6538,6 @@ MonoBehaviour:
   questPopup: {fileID: 1485176536}
   healthUI: {fileID: 1105233557}
   startingPlayerCurrency: 500
-  playerCurrency: 0
   gameHealth: 100
   maxPlayerHealth: 100
   healthDecreaseFactor: 1

@@ -13,10 +13,16 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
-        playerCurrency = startingPlayerCurrency;
+        PlayerCurrency = startingPlayerCurrency;
     }
 
     // Public variables
+    [Header("Level Number")]
+    [Range(0, 1)]
+    [Tooltip("Level is zero-indexed (i.e. level = 0 is the first level).")]
+    public int level = 0;
+
+
     [Header("Mouse Handler")]
     [Tooltip("Script that handles mouse click functions.")]
     public MouseClick MouseClickHandler;
@@ -35,7 +41,6 @@ public class GameManager : MonoBehaviour
 
     [Header("Player Currency")]
     [SerializeField] private float startingPlayerCurrency = 500f;
-    public float playerCurrency;
 
     [Header("Player Health")]
     public float gameHealth = 100f;
@@ -46,6 +51,7 @@ public class GameManager : MonoBehaviour
     public float healthIncreaseFactor = 0.5f;
 
     // Public get, private set variables
+    public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
     public int CoinCollectedCount { get; private set; }
     public GameObject SelectedButton { get; private set; }
@@ -62,6 +68,7 @@ public class GameManager : MonoBehaviour
     private bool mainUIActive = true;
     private bool inventoryUIActive = false;
     private bool questUIActive = false;
+    private bool gameWin = false;
 
     void Start()
     {
@@ -79,8 +86,42 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         TrackGameHealth();
+        CheckIfWin();
         mouseModeDisplay.text = CurrentMouseMode.ToString();
         previousMouseModeDisplay.text = PreviousMouseMode.ToString();
+    }
+
+    private void CheckIfWin()
+    {
+        if (gameHealth > 0f && QuestManager.Instance.GetCompletedQuestCount() == QuestManager.Instance.GetTotalQuestCount())
+        {
+            if (!gameWin)
+            {
+                Debug.Log("Game win");
+            }
+            gameWin = true;
+            LevelComplete();
+        }
+    }
+
+    private void LevelComplete()
+    {
+        switch (level)
+        {
+            case 0:
+                // Go to level 2 scene
+                // OR show win screen with button to go to main menu (level select)
+                break;
+            case 1:
+                // show win screen with button to go to main menu
+                break;
+        }
+    }
+
+    private void GameOver()
+    {
+        // Go to game over screen
+        Debug.Log("Game over");
     }
 
     private void TrackGameHealth()
@@ -112,6 +153,10 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateHealthSlider(netHealthChange);
+        if (gameHealth <= 0f)
+        {
+            GameOver();
+        }
     }
 
     // Add x amount of item to inventory dictionary
@@ -143,10 +188,7 @@ public class GameManager : MonoBehaviour
     // Return how many of x item player has in inventory
     public int GetInventoryItemAmount(Item.ItemType type)
     {
-        if (inventoryDict.TryGetValue(type, out int currentAmount))
-        {
-            return currentAmount;
-        }
+        if (inventoryDict.TryGetValue(type, out int currentAmount)) return currentAmount;
         return 0;
     }
 
@@ -174,11 +216,14 @@ public class GameManager : MonoBehaviour
             spawnedItems.Add(type, 1);
         }
     }
+
+    // Tracks number of heals
     public void IncrementHealCounter()
     {
         HealCount += 1;
     }
 
+    // Tracks number of coins collected
     public void IncrementCoinCollectCounter()
     {
         CoinCollectedCount += 1;
@@ -186,16 +231,13 @@ public class GameManager : MonoBehaviour
 
     public void ChangePlayerCurrency(float amount)
     {
-        playerCurrency = Mathf.Max(0, playerCurrency + amount);
+        PlayerCurrency = Mathf.Max(0, PlayerCurrency + amount);
         UpdateShopDisplay();
     }
     // Return how many of x item has been placed
     public int GetSpawnedTotal(Item.ItemType type)
     {
-        if (spawnedItems.TryGetValue(type, out int currentAmount))
-        {
-            return currentAmount;
-        }
+        if (spawnedItems.TryGetValue(type, out int currentAmount)) return currentAmount;
         return 0;
     }
 
@@ -226,9 +268,9 @@ public class GameManager : MonoBehaviour
         SetCurrentMouseMode(PreviousMouseMode);
     }
 
+    // Highlight selected button in inventory 
     public void SetSelectedButton(GameObject button)
     {
-        Debug.Log($"Button = {button}");
         if (SelectedButton != null)
         {
             SelectedButton.transform.Find("Background").GetComponent<Image>().color = Color.white;
@@ -237,6 +279,7 @@ public class GameManager : MonoBehaviour
         SelectedButton.transform.Find("Background").GetComponent<Image>().color = new Color32(182, 226, 140, 255);
     }
 
+    // Clear selected button highlight
     public void ClearSelectedButton()
     {
         if (SelectedButton != null)
