@@ -179,7 +179,7 @@ public class QuestManager : MonoBehaviour
                 string displayTypeString = Item.GetItemName(plants[i]).ToLower();
                 if (requiredAmount > 1) displayTypeString += "s";
                 Quest q = new PlaceItemQuest($"Place_Plant{i + 1}_Lv{j + 1}", $"Place {requiredAmount} {displayTypeString}.", j + 1, plants[i], requiredAmount, rewardAmount, active);
-                Debug.Log(q.ToString());
+                //Debug.Log(q.ToString());
                 Quests.Add(q);
             }
         }
@@ -199,7 +199,7 @@ public class QuestManager : MonoBehaviour
             string endString = (requiredHealAmount > 1) ? "s." : ".";
             string healString = $"Heal plants {requiredHealAmount} time" + endString;
             Quest healQuest = new HealQuest($"Heal_Lv{i + 1}", healString, i + 1, requiredHealAmount, rewardAmount, active);
-            Debug.Log(healQuest.ToString());
+            //Debug.Log(healQuest.ToString());
             Quests.Add(healQuest);
 
             int requiredCoinAmount = (int)Math.Floor(coinAmounts[i] * levelMultiplier);
@@ -207,7 +207,7 @@ public class QuestManager : MonoBehaviour
             endString = (requiredCoinAmount > 1) ? "s." : ".";
             string coinString = $"Collect {requiredCoinAmount} coin" + endString;
             Quest coinQuest = new CoinCollectQuest($"CoinCollect_Lv{i + 1}", coinString, i + 1, requiredCoinAmount, rewardAmount, active);
-            Debug.Log(coinQuest.ToString());
+            //Debug.Log(coinQuest.ToString());
             Quests.Add(coinQuest);
         }
     }
