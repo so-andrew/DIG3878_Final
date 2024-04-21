@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 // Things to track:
@@ -166,7 +164,7 @@ public class QuestManager : MonoBehaviour
         // ex plantSpawnByLevel[0,2] = multiplier for level 1, Plant3
         Item.ItemType[] plants = { Item.ItemType.Plant1, Item.ItemType.Plant2, Item.ItemType.Plant3 };
         int[,] plantSpawnByLevel = { { 5, 2, 1 }, { 10, 4, 2 } };
-        int[] rewardMultiplierByPlant = { 100, 150, 200 };
+        int[] rewardMultiplierByPlant = { 50, 75, 125 };
 
         // Initialize place quests
         for (int i = 0; i < 3; i++) // Outer loop: plant type
@@ -195,7 +193,7 @@ public class QuestManager : MonoBehaviour
             bool active = i < 1;
 
             int requiredHealAmount = (int)Math.Floor(healAmounts[i] * levelMultiplier);
-            int rewardAmount = (int)Math.Floor(150 * (i + 1) * levelMultiplier);
+            int rewardAmount = (int)Math.Floor(100 * (i + 1) * levelMultiplier);
             string endString = (requiredHealAmount > 1) ? "s." : ".";
             string healString = $"Heal plants {requiredHealAmount} time" + endString;
             Quest healQuest = new HealQuest($"Heal_Lv{i + 1}", healString, i + 1, requiredHealAmount, rewardAmount, active);
@@ -203,7 +201,7 @@ public class QuestManager : MonoBehaviour
             Quests.Add(healQuest);
 
             int requiredCoinAmount = (int)Math.Floor(coinAmounts[i] * levelMultiplier);
-            rewardAmount = (int)Math.Floor(100 * (i + 1) * levelMultiplier);
+            rewardAmount = (int)Math.Floor(50 * (i + 1) * levelMultiplier);
             endString = (requiredCoinAmount > 1) ? "s." : ".";
             string coinString = $"Collect {requiredCoinAmount} coin" + endString;
             Quest coinQuest = new CoinCollectQuest($"CoinCollect_Lv{i + 1}", coinString, i + 1, requiredCoinAmount, rewardAmount, active);
