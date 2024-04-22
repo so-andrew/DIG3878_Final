@@ -18,7 +18,7 @@ public class EnemyDamage : MonoBehaviour
         Health plantHealth = plant.GetComponentInChildren<Health>();
         if (plantHealth != null)
         {
-            plantHealth.takeDamage(0.1f);
+            plantHealth.takeDamage(0.07f);
         }
         else
         {

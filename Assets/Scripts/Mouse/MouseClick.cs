@@ -215,13 +215,13 @@ public class MouseClick : MonoBehaviour
                     GameManager.Instance.IncrementCoinCollectCounter();
                     Destroy(clickableItem);
                 }
+                //Check if item is Enemy
                 if (clickableItem.CompareTag("Enemy"))
                 {
-                    //Destroy(clickableItem);
                     clickableItem.GetComponent<EnemyMovement>().HandleEnemyClicked();
                     clickableItem.GetComponent<EnemyHealth>().TakeDamage(20);
-                    // Check if item is medicine
                 }
+                // Check if item is medicine
                 else if (clickableItem.CompareTag("Medicine"))
                 {
                     GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);

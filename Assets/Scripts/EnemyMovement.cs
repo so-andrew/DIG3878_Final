@@ -72,7 +72,7 @@ public class EnemyMovement : MonoBehaviour
             {
                 Vector3 point = GeneratePlantTarget();
 
-                if (Vector3.Distance(gameObject.transform.position, targetPlant.transform.position) < 4)
+                if (Vector3.Distance(gameObject.transform.position, targetPlant.transform.position) < 6)
                 {
                     //Debug.Log("STOP AT plant target");
                     agent.isStopped = true;
@@ -110,7 +110,7 @@ public class EnemyMovement : MonoBehaviour
             agent.isStopped = false;
         }
         agent.ResetPath();
-        NextRandomMovement();
+        //NextRandomMovement();
         randomMove = true;
         targetMove = false;
 

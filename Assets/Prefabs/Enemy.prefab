@@ -174,8 +174,8 @@ MonoBehaviour:
   agent: {fileID: 0}
   range: 40
   point: {fileID: 0}
-  damageInterval: 0
-  randomInterval: 0
+  damageInterval: 15
+  randomInterval: 8
 --- !u!114 &1821490657426558425
 MonoBehaviour:
   m_ObjectHideFlags: 0
