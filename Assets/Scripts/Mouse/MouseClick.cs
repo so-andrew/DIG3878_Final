@@ -152,6 +152,7 @@ public class MouseClick : MonoBehaviour
 
             // Increment spawn counter
             GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
+            GameManager.Instance.IncrementPlantCounter();
 
             // If there are no more of current item, reset mouse mode to default
             if (resetMousePlacementMode)
