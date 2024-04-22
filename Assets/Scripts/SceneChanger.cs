@@ -10,8 +10,12 @@ public class SceneChanger : MonoBehaviour
     private void Awake()
     {
         if (Instance != null && Instance != this) Destroy(this);
-        else Instance = this;
-        DontDestroyOnLoad(gameObject);
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
     }
 
     public void SceneChange(int sceneIndex)
@@ -21,6 +25,7 @@ public class SceneChanger : MonoBehaviour
 
     public void SceneChange(string name)
     {
+        Debug.Log("Loading scene " + name);
         SceneManager.LoadScene(name);
     }
 

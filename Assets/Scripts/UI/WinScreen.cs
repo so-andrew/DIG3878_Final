@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class WinScreen : MonoBehaviour
 {
@@ -28,6 +31,14 @@ public class WinScreen : MonoBehaviour
         healCount = heals.Find("TimesHealedCount").GetComponent<TMP_Text>();
         coinCount = coins.Find("CoinsCollectedCount").GetComponent<TMP_Text>();
         enemyCount = enemies.Find("EnemiesSquishedCount").GetComponent<TMP_Text>();
+
+        Button mainMenuButton = transform.Find("Button").GetComponent<Button>();
+        //mainMenuButton.onClick.AddListener(OnWinScreenButtonClick);
+    }
+
+    public void OnWinScreenButtonClick()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     // Update is called once per frame
