@@ -18,10 +18,25 @@ public class CameraMovement : MonoBehaviour
     private bool dragPanMoveActive = false;
     private Vector2 lastMousePosition;
     private float targetFOV = 50f;
+    private Vector3 startingPosition;
+    private Vector3 startingRotation;
 
+    private Vector3 startingCameraPosition;
+
+    void Start()
+    {
+        startingPosition = transform.position;
+        startingRotation = transform.rotation.eulerAngles;
+        startingCameraPosition = cam.transform.position;
+    }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetCamera();
+        }
+
         HandleCameraMovement();
         if (useDragPan)
         {
@@ -34,6 +49,13 @@ public class CameraMovement : MonoBehaviour
         }
 
     }
+
+    private void ResetCamera()
+    {
+        transform.SetPositionAndRotation(startingPosition, Quaternion.Euler(startingRotation));
+        cam.transform.position = startingCameraPosition;
+    }
+
     private void HandleCameraMovement()
     {
         // Camera movement (arrow keys)
