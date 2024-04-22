@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2743074002302523173}
   - component: {fileID: 4400482160171448049}
   - component: {fileID: -7297171889207217790}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: PP_Sunflower_04
   m_TagString: plant
   m_Icon: {fileID: 0}
@@ -121,6 +121,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyPrefab: {fileID: 4232354131970254903, guid: eee136f84f0483740be78d7134743044, type: 3}
   offset: {x: 0, y: 1, z: 0}
-  minInterval: 45
-  maxInterval: 90
+  minInterval: 30
+  maxInterval: 45
   moneyLifetime: 5

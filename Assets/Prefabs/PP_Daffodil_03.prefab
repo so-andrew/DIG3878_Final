@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7763024347283268281}
   - component: {fileID: 8123141273917358959}
   - component: {fileID: 9219456125218295841}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: PP_Daffodil_03
   m_TagString: plant
   m_Icon: {fileID: 0}
@@ -121,6 +121,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyPrefab: {fileID: 4232354131970254903, guid: eee136f84f0483740be78d7134743044, type: 3}
   offset: {x: 0, y: 1, z: 0}
-  minInterval: 45
-  maxInterval: 90
+  minInterval: 30
+  maxInterval: 60
   moneyLifetime: 5
