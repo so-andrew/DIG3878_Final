@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public GameObject questUI;
     public QuestPopup questPopup;
     public HealthUI healthUI;
+    public GameObject winScreen;
 
     [Header("Player Currency")]
     [SerializeField] private float startingPlayerCurrency = 500f;
@@ -56,6 +57,8 @@ public class GameManager : MonoBehaviour
     public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
     public int CoinCollectedCount { get; private set; }
+    public int PlantCount { get; private set; }
+    public int EnemiesSquishedCount { get; private set; }
     public bool GameSimulationActive { get; private set; }
     public GameObject SelectedButton { get; private set; }
     public MouseMode CurrentMouseMode { get; private set; }
@@ -93,11 +96,15 @@ public class GameManager : MonoBehaviour
         mainUI.SetActive(mainUIActive);
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
+        winScreen.SetActive(gameWin);
 
         // Initialize game variables
         CurrentMouseMode = MouseMode.Default;
         GameSimulationActive = true;
         HealCount = 0;
+        PlantCount = 0;
+        CoinCollectedCount = 0;
+        EnemiesSquishedCount = 0;
     }
 
     void Update()
@@ -124,26 +131,13 @@ public class GameManager : MonoBehaviour
 
     private void LevelComplete()
     {
-        switch (level)
-        {
-            case 0:
-                // Go to level 2 scene
-                // OR show win screen with button to go to main menu (level select)
-
-                // Right now this goes back to the main menu
-                sceneChanger.SceneChange("Mainmenu");
-
-                break;
-            case 1:
-                // show win screen with button to go to main menu
-                break;
-        }
+        ShowWinScreen();
     }
 
     private void GameOver()
     {
         // Go to game over screen
-        Debug.Log("Game over");
+        sceneChanger.SceneChange("GameOver");
     }
 
     private void TrackGameHealth()
@@ -257,6 +251,16 @@ public class GameManager : MonoBehaviour
     public void IncrementCoinCollectCounter()
     {
         CoinCollectedCount += 1;
+    }
+
+    public void IncrementEnemyCounter()
+    {
+        EnemiesSquishedCount += 1;
+    }
+
+    public void IncrementPlantCounter()
+    {
+        PlantCount += 1;
     }
 
     public void ChangePlayerCurrency(float amount)
@@ -374,6 +378,15 @@ public class GameManager : MonoBehaviour
         ToggleUI();
     }
 
+    private void ShowWinScreen()
+    {
+        questUIActive = false;
+        mainUIActive = false;
+        shopUIActive = false;
+        inventoryUIActive = false;
+        ToggleUI();
+    }
+
     // Helper function to toggle different UI elements
     private void ToggleUI()
     {
@@ -381,6 +394,7 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(shopUIActive);
         inventoryUI.SetActive(inventoryUIActive);
         questUI.SetActive(questUIActive);
+        winScreen.SetActive(gameWin);
     }
 
     // Call InventoryMenu.GenerateButtons()
