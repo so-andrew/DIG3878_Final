@@ -24,12 +24,13 @@ public class HealthUI : MonoBehaviour
 
     public void ToggleGainIndicator(float change)
     {
-        if (change > 0f)
+        //Debug.Log($"Change = {change}");
+        if (change > 0.005f)
         {
             indicator.text = "+";
             indicator.color = Color.green;
         }
-        else if (change < 0f)
+        else if (change < -0.005f)
         {
             indicator.text = "-";
             indicator.color = Color.red;

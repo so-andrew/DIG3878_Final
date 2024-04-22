@@ -9,9 +9,15 @@ EditorBuildSettings:
     path: Assets/Web3Unity/Scenes/WebLogin.unity
     guid: a1b2001e782bb47659732d7e2bcdc35f
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: c9c213676d4854c49b26e9b1c211a356
+  - enabled: 1
     path: Assets/Scenes/Level1.unity
     guid: 689a380dba6830040b487cc0308c1f5a
   - enabled: 1
     path: Assets/Scenes/Level2.unity
     guid: 4e41ed16c3e294b40a0034b8dd805ba2
+  - enabled: 1
+    path: Assets/Scenes/GameOver.unity
+    guid: 3b4b4bf1952cec9469a5a3b5d393104f
   m_configObjects: {}

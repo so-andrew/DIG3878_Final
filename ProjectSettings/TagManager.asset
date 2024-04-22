@@ -9,6 +9,7 @@ TagManager:
   - Money
   - Medicine
   - Enemy
+  - SceneManager
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - NavMesh
   - Clickable
   - Disease
-  - 
+  - Plant
   - 
   - 
   - 
