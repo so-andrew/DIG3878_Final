@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -18,7 +19,10 @@ public class MouseClick : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask groundLayerMask;
-    [SerializeField] private LayerMask clickableLayerMask;
+    [SerializeField] private string[] clickableLayers;
+    private LayerMask clickableLayerMask;
+    private LayerMask plantLayerMask;
+    private LayerMask noPlantLayerMask;
     [SerializeField] private LayerMask diseaseLayerMask;
     [SerializeField] private GameObject healthBarPrefab;
 
@@ -41,6 +45,10 @@ public class MouseClick : MonoBehaviour
             indicatorLight = transform.Find("Light").GetComponent<Light>();
         }
         Cursor.SetCursor(defaultCursor, new Vector2(3, 3), CursorMode.Auto);
+        clickableLayerMask = LayerMask.GetMask(clickableLayers);
+        string[] layersExcludingPlant = clickableLayers.Where(layer => layer != "Plant").ToArray();
+        noPlantLayerMask = LayerMask.GetMask(layersExcludingPlant);
+        plantLayerMask = LayerMask.GetMask("Plant");
     }
 
     void Update()
@@ -158,7 +166,7 @@ public class MouseClick : MonoBehaviour
         if (CanPlaceCurrentItem() && target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, plantLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
                 if (clickableItem.CompareTag("plant"))
@@ -203,7 +211,7 @@ public class MouseClick : MonoBehaviour
         if (target.x != Mathf.Infinity)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, clickableLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, noPlantLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
                 //Debug.Log($"{clickableItem.name} - {clickableItem.tag}");
