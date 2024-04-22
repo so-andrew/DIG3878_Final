@@ -183,7 +183,7 @@ public class QuestManager : MonoBehaviour
         }
 
         int[] healAmounts = { 1, 5, 10 };
-        int[] coinAmounts = { 5, 10, 20 };
+        int[] coinAmounts = { 5, 10, 15 };
 
         double levelMultiplier = level > 0 ? 1.5 : 1.0;
 
