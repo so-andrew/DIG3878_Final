@@ -34,7 +34,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (randomMove)
         {
-            Debug.Log("Random movement");
+            //Debug.Log("Random movement");
 
             if (agent.remainingDistance <= agent.stoppingDistance) //done with path and still has paths to go
             {
