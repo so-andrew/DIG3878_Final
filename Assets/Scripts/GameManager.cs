@@ -53,6 +53,11 @@ public class GameManager : MonoBehaviour
     [Tooltip("This factor is multiplied by the percentage of healthy plants to determine health regen rate.")]
     public float healthIncreaseFactor = 0.5f;
 
+    [Header("Sound Effects")]
+    public AudioClip winSfx;
+    [Range(0, 1)]
+    public float winSfxVolume = 1;
+
     // Public get, private set variables
     public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
@@ -110,16 +115,17 @@ public class GameManager : MonoBehaviour
         {
             if (!gameWin)
             {
-                Debug.Log("Game win");
+                gameWin = true;
+                GameSimulationActive = false;
+                LevelComplete();
             }
-            gameWin = true;
-            GameSimulationActive = false;
-            LevelComplete();
+
         }
     }
 
     private void LevelComplete()
     {
+        AudioManager.Instance.Play(winSfx, winSfxVolume);
         ShowWinScreen();
     }
 

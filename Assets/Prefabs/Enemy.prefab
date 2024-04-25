@@ -731,6 +731,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e551b962b6bb2418311869baf0364d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deathSfx: {fileID: 8300000, guid: dd724b0e3712cc84ca48d6bcd22eecd3, type: 3}
+  deathClipVolume: 1
+  splatSfx: {fileID: 8300000, guid: 7702eb9b55b764d498214d41662ea181, type: 3}
+  splatClipVolume: 0.5
 --- !u!95 &2258456421698295880
 Animator:
   serializedVersion: 5

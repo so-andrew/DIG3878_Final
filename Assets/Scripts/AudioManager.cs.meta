@@ -1,12 +1,9 @@
 fileFormatVersion: 2
-guid: 5ee213c37fbd0d843b4ff29f429477ef
+guid: 586f7af1e08b48f438bc596c04d409be
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - healSfx: {instanceID: 0}
-  - slider: {instanceID: 0}
-  - playerCamera: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
