@@ -10,4 +10,9 @@ public class SceneManagement : MonoBehaviour
     {
         SceneManager.LoadScene(sceneName);
     }
+
+    public void AdditiveChangeScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+    }
 }
