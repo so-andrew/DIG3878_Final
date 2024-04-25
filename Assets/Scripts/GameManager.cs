@@ -79,17 +79,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Initialize scene changer
-        GameObject SceneManager = GameObject.FindGameObjectWithTag("SceneManager");
-        if (SceneManager)
-        {
-            sceneChanger = SceneManager.GetComponent<SceneChanger>();
-        }
-        else
-        {
-            Debug.Log("No SceneManager exists in the scene (try running from MainMenu scene)");
-        }
-
 
         // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
