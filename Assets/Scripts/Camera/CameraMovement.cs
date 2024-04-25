@@ -13,7 +13,12 @@ public class CameraMovement : MonoBehaviour
     public float rotateSpeed = 100f;
     public float zoomSpeed = 10f;
     public float dragPanSpeed = 2f;
-    public float minY = -7f;
+    public float minY = 0f;
+    public float maxY = 25f;
+    public float minX = -240f;
+    public float maxX = 240f;
+    public float minZ = -240f;
+    public float maxZ = 240f;
 
     private bool dragPanMoveActive = false;
     private Vector2 lastMousePosition;
@@ -68,6 +73,7 @@ public class CameraMovement : MonoBehaviour
         // Move the camera
         Vector3 moveDirection = (transform.forward * inputDirection.z) + (transform.right * inputDirection.x);
         transform.position += moveSpeed * Time.deltaTime * moveDirection;
+        XZBoundsChecking();
     }
 
     private void DragPanMovement()
@@ -97,6 +103,15 @@ public class CameraMovement : MonoBehaviour
         // Move the camera
         Vector3 moveDirection = (transform.forward * inputDirection.z) + (transform.right * inputDirection.x);
         transform.position += moveSpeed * Time.deltaTime * moveDirection;
+        XZBoundsChecking();
+    }
+
+    private void XZBoundsChecking()
+    {
+        if (transform.position.x < minX) transform.position = new Vector3(minX, transform.position.y, transform.position.z);
+        if (transform.position.x > maxX) transform.position = new Vector3(maxX, transform.position.y, transform.position.z);
+        if (transform.position.z < minZ) transform.position = new Vector3(transform.position.x, transform.position.y, minZ);
+        if (transform.position.z > maxZ) transform.position = new Vector3(transform.position.x, transform.position.y, maxZ);
     }
 
     private void HandleCameraRotation()
@@ -126,15 +141,24 @@ public class CameraMovement : MonoBehaviour
 
     private void HandleCameraZoom_MoveForward()
     {
+        // Zoom in (y--)
         if (Input.mouseScrollDelta.y > 0)
         {
-            cam.transform.position += Time.deltaTime * zoomSpeed * cam.transform.forward;
+            Vector3 newPos = cam.transform.position + Time.deltaTime * zoomSpeed * cam.transform.forward;
+            if (newPos.y > minY)
+            {
+                cam.transform.position += Time.deltaTime * zoomSpeed * cam.transform.forward;
+            }
         }
+        // Zoom out (y++)
         if (Input.mouseScrollDelta.y < 0)
         {
-            cam.transform.position -= Time.deltaTime * zoomSpeed * cam.transform.forward;
+            Vector3 newPos = cam.transform.position - Time.deltaTime * zoomSpeed * cam.transform.forward;
+            if (newPos.y < maxY)
+            {
+                cam.transform.position -= Time.deltaTime * zoomSpeed * cam.transform.forward;
+            }
         }
-        if (cam.transform.position.y < minY) cam.transform.position = new Vector3(cam.transform.position.x, minY, cam.transform.position.z);
     }
 }
 
