@@ -50,7 +50,7 @@ public class MouseClick : MonoBehaviour
 
     void Start()
     {
-        if (!mainCamera) Debug.Log("No camera assigned in PlaceItemsDemo");
+        if (!mainCamera) Debug.Log("No camera assigned.");
         indicator = GetComponent<MeshRenderer>();
         if (GameManager.Instance.level == 1)
         {
@@ -95,6 +95,22 @@ public class MouseClick : MonoBehaviour
                     break;
                 case MouseMode.Default:
                     HandlePickup(mousePosition);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            switch (GameManager.Instance.CurrentMouseMode)
+            {
+                case MouseMode.Place:
+                    GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+                    GameManager.Instance.ClearSelectedButton();
+                    break;
+                case MouseMode.Heal:
+                    GameManager.Instance.SetCurrentMouseMode(MouseMode.Default);
+                    GameManager.Instance.ClearSelectedButton();
                     break;
                 default:
                     break;
@@ -229,7 +245,6 @@ public class MouseClick : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, noPlantLayerMask))
             {
                 GameObject clickableItem = raycastHit.transform.gameObject;
-                //Debug.Log($"{clickableItem.name} - {clickableItem.tag}");
 
                 // Check if item is money
                 if (clickableItem.CompareTag("Money"))
