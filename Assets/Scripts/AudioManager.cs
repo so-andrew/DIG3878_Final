@@ -18,14 +18,12 @@ public class AudioManager : MonoBehaviour
     public void Play(AudioClip clip)
     {
         if (audioSource == null) return;
-        Debug.Log("Playing " + clip.name);
         audioSource.PlayOneShot(clip);
     }
 
     public void Play(AudioClip clip, float volume)
     {
         if (audioSource == null) return;
-        Debug.Log("Playing " + clip.name);
         audioSource.PlayOneShot(clip, volume);
     }
 }
