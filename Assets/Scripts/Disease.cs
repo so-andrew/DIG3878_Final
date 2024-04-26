@@ -6,11 +6,19 @@ public class Disease : MonoBehaviour
 {
     [SerializeField] float expansionSpeed = 0.5f;   // Rate at which disease spreads
     [SerializeField] float maxRadius = 15f;         // Max spread of disease
+    [SerializeField] float rotationSpeed = 1f;
 
     float timer = 0f;
     float damageInterval = 1f; // Interval of 1 second
 
     List<GameObject> plantsInZone = new List<GameObject>();
+
+    private GameObject model;
+
+    void Start()
+    {
+        model = transform.Find("Aura").gameObject;
+    }
 
     void ExpandRadius()
     {
@@ -22,6 +30,11 @@ public class Disease : MonoBehaviour
             transform.localScale = Vector3.one * currentRadius;
             GetComponent<Collider>().transform.localScale = Vector3.one * currentRadius;
         }
+    }
+
+    void RotateModel()
+    {
+        model.transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.up);
     }
 
     // Damage each plant in zone
@@ -62,6 +75,7 @@ public class Disease : MonoBehaviour
     {
         if (!GameManager.Instance.GameSimulationActive) return;
         ExpandRadius();
+        RotateModel();
 
         // Cause damage every second
         timer += Time.deltaTime;
