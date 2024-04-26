@@ -7112,6 +7112,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HealthUI
       objectReference: {fileID: 0}
+    - target: {fileID: 2198233766328863954, guid: eae54b4d49073344189b7b457c1c9f67, type: 3}
+      propertyPath: m_Value
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

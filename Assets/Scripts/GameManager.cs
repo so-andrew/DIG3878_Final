@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -81,10 +82,11 @@ public class GameManager : MonoBehaviour
     private bool inventoryUIActive = false;
     private bool questUIActive = false;
     private bool gameWin = false;
+    private bool below40Percent = false;
+    private string[] themes = { "level1Theme", "level2Theme" };
 
     void Start()
     {
-
         // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
@@ -99,6 +101,9 @@ public class GameManager : MonoBehaviour
         PlantCount = 0;
         CoinCollectedCount = 0;
         EnemiesSquishedCount = 0;
+
+        // Set music
+        BackgroundMusic.Instance.PlayMusic(themes[level]);
     }
 
     void Update()
@@ -126,13 +131,14 @@ public class GameManager : MonoBehaviour
     private void LevelComplete()
     {
         AudioManager.Instance.Play(winSfx, winSfxVolume);
+        BackgroundMusic.Instance.StopMusic();
         ShowWinScreen();
     }
 
     private void GameOver()
     {
         // Go to game over screen
-        sceneChanger.SceneChange("GameOver");
+        SceneManager.LoadScene("GameOver");
     }
 
     private void TrackGameHealth()
@@ -172,6 +178,16 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateHealthSlider(netHealthChange);
+        if (gameHealth <= 50f && !below40Percent)
+        {
+            below40Percent = true;
+            BackgroundMusic.Instance.PlayMusic("lowHealthTheme");
+        }
+        if (gameHealth > 50f && below40Percent)
+        {
+            below40Percent = false;
+            BackgroundMusic.Instance.PlayMusic(themes[level]);
+        }
         if (gameHealth <= 0f)
         {
             GameOver();

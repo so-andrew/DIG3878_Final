@@ -8,9 +8,12 @@ public class GameOverAudio : MonoBehaviour
     [Range(0, 1)]
     public float loseSfxVolume = 1;
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
+        BackgroundMusic.Instance.StopMusic();
         AudioManager.Instance.Play(loseSfx, loseSfxVolume);
+        yield return new WaitForSeconds(loseSfx.length + 2.5f);
+        BackgroundMusic.Instance.PlayMusic("gameOverTheme");
     }
 
 }

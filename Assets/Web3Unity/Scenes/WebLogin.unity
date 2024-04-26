@@ -494,6 +494,7 @@ GameObject:
   - component: {fileID: 519188792}
   - component: {fileID: 519188791}
   - component: {fileID: 519188793}
+  - component: {fileID: 519188794}
   m_Layer: 0
   m_Name: BackgroundMusic
   m_TagString: Untagged
@@ -513,7 +514,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6828ce8481af89041bb351dce6b69e41, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.25
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -624,6 +625,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0caf255b4441bfd409d070442b20b6d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &519188794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519188790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09cee0a1008f4bb45b5dbd5b87193ab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainTheme: {fileID: 8300000, guid: 6828ce8481af89041bb351dce6b69e41, type: 3}
+  mainThemeVolume: 0.15
+  gameOverTheme: {fileID: 8300000, guid: e3c118af53fc7724ca755c936401c38f, type: 3}
+  gameOverVolume: 0.15
+  level1Theme: {fileID: 8300000, guid: 948d56506f1ec8c47bf5f127d903be31, type: 3}
+  level1Volume: 0.15
+  level2Theme: {fileID: 8300000, guid: 557da4500ca2a3945aa2c914af9410a4, type: 3}
+  level2Volume: 0.15
+  lowHealthTheme: {fileID: 8300000, guid: db0009f93d5dc1243ad452495b57fa27, type: 3}
+  lowHealthVolume: 0.15
 --- !u!1 &520579350
 GameObject:
   m_ObjectHideFlags: 0
