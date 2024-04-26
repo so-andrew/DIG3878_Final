@@ -5,6 +5,8 @@ using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
+    public GameObject mainPanel;
+    public GameObject creditsPanel;
     private string address;
     private GameObject addressObject;
     private TMP_Text addressText;
@@ -12,12 +14,14 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         address = PlayerPrefs.GetString("Account");
-        addressObject = transform.Find("Panel").Find("Address").gameObject;
+        addressObject = mainPanel.transform.Find("Address").gameObject;
         addressText = addressObject.GetComponent<TMP_Text>();
         if (address == null || address.Length == 0)
         {
             addressObject.SetActive(false);
         }
+        mainPanel.SetActive(true);
+        creditsPanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -28,6 +32,21 @@ public class MainMenu : MonoBehaviour
             address = PlayerPrefs.GetString("Account");
             addressObject.SetActive(true);
         }
-        addressText.text = "Wallet Address: " + address;
+        if (addressObject.activeSelf)
+        {
+            addressText.text = "Wallet Address: " + address;
+        }
+    }
+
+    public void ShowCredits()
+    {
+        creditsPanel.SetActive(true);
+        mainPanel.SetActive(false);
+    }
+
+    public void HideCredits()
+    {
+        creditsPanel.SetActive(false);
+        mainPanel.SetActive(true);
     }
 }
