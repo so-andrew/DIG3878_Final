@@ -22,14 +22,13 @@ public class SpawnEnemies : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= spawnInterval &&  GameObject.FindGameObjectsWithTag("Enemy").Length < maxEnemies)
+        if (timer >= spawnInterval && GameObject.FindGameObjectsWithTag("Enemy").Length < maxEnemies)
         {
-                SpawnEnemy();
-                timer = 0f;
+            SpawnEnemy();
+            timer = 0f;
         }
     }
 

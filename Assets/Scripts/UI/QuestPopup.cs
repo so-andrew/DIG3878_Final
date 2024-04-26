@@ -23,7 +23,6 @@ public class QuestPopup : MonoBehaviour
     private Animator animator;
     private Coroutine queueChecker;
 
-    // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -32,7 +31,6 @@ public class QuestPopup : MonoBehaviour
 
     public void PushNewQuest(QuestNotification notif)
     {
-        //Debug.Log($"Adding {notif.Text}, {notif.ProgressAmount}/{notif.RequiredAmount} to queue");
         questQueue.Enqueue(notif);
         queueChecker ??= StartCoroutine(CheckQueue());
     }

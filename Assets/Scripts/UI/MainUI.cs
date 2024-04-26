@@ -6,7 +6,6 @@ public class MainUI : MonoBehaviour
 {
     public GameObject cryptoBalanceButton;
 
-    // Start is called before the first frame update
     void Start()
     {
         string account = PlayerPrefs.GetString("Account");

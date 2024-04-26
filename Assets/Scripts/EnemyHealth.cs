@@ -27,11 +27,9 @@ public class EnemyHealth : MonoBehaviour
             if (!deathAnimPlayed)
             {
                 deathAnimPlayed = true;
-                Debug.Log("Starting death anim");
                 GameManager.Instance.IncrementEnemyCounter();
                 AudioManager.Instance.Play(deathSfx, deathClipVolume);
                 animator.Play("Die");
-                //StartCoroutine(DeathAnimation());
             }
         }
     }
@@ -51,13 +49,4 @@ public class EnemyHealth : MonoBehaviour
             AudioManager.Instance.Play(splatSfx, splatClipVolume);
         }
     }
-
-    // IEnumerator DeathAnimation()
-    // {
-    //     do
-    //     {
-    //         yield return null;
-    //     } while (!animator.GetCurrentAnimatorStateInfo(0).IsTag("Idle"));
-    //     Destroy(gameObject);
-    // }
 }

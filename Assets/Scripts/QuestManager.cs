@@ -126,24 +126,6 @@ public class QuestManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
-
-        // Initialize quests in Awake
-
-        // Quests.Add(new PlaceItemQuest("Place_Plant1_Lv1", "Place 5 hyacinths.", 1, Item.ItemType.Plant1, 5, 100));
-        // Quests.Add(new PlaceItemQuest("Place_Plant1_Lv2", "Place 10 hyacinths.", 2, Item.ItemType.Plant1, 10, 200, false));
-        // Quests.Add(new PlaceItemQuest("Place_Plant1_Lv3", "Place 15 hyacinths.", 3, Item.ItemType.Plant1, 15, 300, false));
-        // Quests.Add(new PlaceItemQuest("Place_Plant2_Lv1", "Place 2 daffodils.", 1, Item.ItemType.Plant2, 2, 150));
-        // Quests.Add(new PlaceItemQuest("Place_Plant2_Lv2", "Place 4 daffodils.", 2, Item.ItemType.Plant2, 4, 300, false));
-        // Quests.Add(new PlaceItemQuest("Place_Plant2_Lv3", "Place 6 daffodils.", 3, Item.ItemType.Plant2, 6, 450, false));
-        // Quests.Add(new PlaceItemQuest("Place_Plant3_Lv1", "Place 1 sunflower.", 1, Item.ItemType.Plant3, 1, 200));
-        // Quests.Add(new PlaceItemQuest("Place_Plant3_Lv2", "Place 3 sunflowers.", 2, Item.ItemType.Plant3, 3, 400, false));
-        // Quests.Add(new PlaceItemQuest("Place_Plant3_Lv3", "Place 5 sunflowers.", 3, Item.ItemType.Plant3, 5, 600, false));
-        // Quests.Add(new HealQuest("Heal_Lv1", "Heal plants 1 time.", 1, 1, 150));
-        // Quests.Add(new HealQuest("Heal_Lv2", "Heal plants 5 times.", 2, 5, 300, false));
-        // Quests.Add(new HealQuest("Heal_Lv3", "Heal plants 10 times.", 3, 10, 450, false));
-        // Quests.Add(new CoinCollectQuest("CoinCollect_Lv1", "Collect 5 coins.", 1, 5, 100));
-        // Quests.Add(new CoinCollectQuest("CoinCollect_Lv2", "Collect 10 coins.", 2, 10, 200, false));
-        // Quests.Add(new CoinCollectQuest("CoinCollect_Lv3", "Collect 20 coins.", 3, 20, 300, false));
     }
 
     void Start()
@@ -197,7 +179,6 @@ public class QuestManager : MonoBehaviour
             string endString = (requiredHealAmount > 1) ? "s." : ".";
             string healString = $"Heal plants {requiredHealAmount} time" + endString;
             Quest healQuest = new HealQuest($"Heal_Lv{i + 1}", healString, i + 1, requiredHealAmount, rewardAmount, active);
-            //Debug.Log(healQuest.ToString());
             Quests.Add(healQuest);
 
             int requiredCoinAmount = (int)Math.Floor(coinAmounts[i] * levelMultiplier);
@@ -205,7 +186,6 @@ public class QuestManager : MonoBehaviour
             endString = (requiredCoinAmount > 1) ? "s." : ".";
             string coinString = $"Collect {requiredCoinAmount} coin" + endString;
             Quest coinQuest = new CoinCollectQuest($"CoinCollect_Lv{i + 1}", coinString, i + 1, requiredCoinAmount, rewardAmount, active);
-            //Debug.Log(coinQuest.ToString());
             Quests.Add(coinQuest);
         }
     }

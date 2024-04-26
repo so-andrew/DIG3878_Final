@@ -19,13 +19,11 @@ public class InventoryMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //int inventoryTotalItemTypes = GameManager.Instance.GetInventoryTotalItemTypes();
         GenerateButtons();
     }
 
     public void GenerateButtons()
     {
-        //Debug.Log("Running GenerateButtons");
         int i = 0;
         if (container == null) return; // Container gameObject is not active; menu will update when shown again
         GameObject[] containerChildren = new GameObject[container.childCount];

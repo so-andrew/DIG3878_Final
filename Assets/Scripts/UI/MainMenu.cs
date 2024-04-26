@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
     private string address;
     private GameObject addressObject;
     private TMP_Text addressText;
-    // Start is called before the first frame update
+
     void Start()
     {
         address = PlayerPrefs.GetString("Account");
@@ -24,7 +24,6 @@ public class MainMenu : MonoBehaviour
         creditsPanel.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (address == null)

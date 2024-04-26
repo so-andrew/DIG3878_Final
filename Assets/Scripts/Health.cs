@@ -17,7 +17,6 @@ public class Health : MonoBehaviour
     [SerializeField] Camera playerCamera;
     [SerializeField] Vector3 offset = new Vector3(0, 1, 0);
 
-    // Start is called before the first frame update
     void Start()
     {
         // Find the main camera in the scene and assign it to playerCamera
@@ -35,7 +34,6 @@ public class Health : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.rotation = playerCamera.transform.rotation; // health bar always face camera
@@ -56,7 +54,6 @@ public class Health : MonoBehaviour
         {
             if (damage > health)
             {
-                // TODO: die
                 health = 0;
             }
             else

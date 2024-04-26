@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
 
 
     // Private variables
-    private SceneChanger sceneChanger;
     private Dictionary<Item.ItemType, int> inventoryDict = new Dictionary<Item.ItemType, int>();
     private Dictionary<Item.ItemType, int> spawnedItems = new Dictionary<Item.ItemType, int>();
     private bool shopUIActive = false;
@@ -162,7 +161,6 @@ public class GameManager : MonoBehaviour
                 criticalHealthPlants++;
             }
         }
-        //if (lowHealthPlants > 0) Debug.Log($"low health plants: {lowHealthPlants}/{childCount}");
 
         float netHealthChange = 0;
         if (childCount > 0)
@@ -172,7 +170,6 @@ public class GameManager : MonoBehaviour
             float amountDecrease = lowHealthDecrease + criticalHealthDecrease;
             float amountIncrease = (float)(childCount - lowHealthPlants) / childCount * healthIncreaseFactor * Time.deltaTime;
 
-            //Debug.Log($"Net health change = {amountIncrease - amountDecrease}");
             netHealthChange = amountIncrease - amountDecrease;
             gameHealth = Mathf.Min(100f, gameHealth + netHealthChange);
         }
@@ -288,14 +285,12 @@ public class GameManager : MonoBehaviour
 
     public void SetPreviousMouseMode(MouseMode mouseMode)
     {
-        // Debug.Log($"Setting previous to {mouseMode}");
         PreviousMouseMode = mouseMode;
     }
 
     // Set current mouse mode
     public void SetCurrentMouseMode(MouseMode mouseMode)
     {
-        // Debug.Log($"Setting mouse mode to {mouseMode}, current = {CurrentMouseMode}, previous = {PreviousMouseMode}");
         // Supposed to prevent mousemode being stuck on UI
         if (CurrentMouseMode != MouseMode.UI) PreviousMouseMode = CurrentMouseMode;
         CurrentMouseMode = mouseMode;

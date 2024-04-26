@@ -113,8 +113,6 @@ public class EnemyMovement : MonoBehaviour
         //NextRandomMovement();
         randomMove = true;
         targetMove = false;
-
-        //Debug.Log("Enemy clicked");
     }
 
     bool RandomPoint(Vector3 center, float range, out Vector3 result)

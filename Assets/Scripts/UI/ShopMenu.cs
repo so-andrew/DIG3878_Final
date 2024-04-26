@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class ShopMenu : MonoBehaviour
 {
@@ -12,7 +11,6 @@ public class ShopMenu : MonoBehaviour
 
     void Awake()
     {
-        //container = transform.Find("Container");
         itemTemplate = container.Find("ShopItemTemplate");
         itemTemplate.gameObject.SetActive(false);
     }
@@ -91,7 +89,6 @@ public class ShopMenu : MonoBehaviour
 
         // Add to inventory
         GameManager.Instance.AddToInventory(itemType, 1);
-        //Debug.Log($"Added {itemType} to inventory; current count: {GameManager.Instance.GetInventoryItemAmount(itemType)}");
         UpdateShopDisplay();
         GameManager.Instance.UpdateInventoryDisplay();
     }

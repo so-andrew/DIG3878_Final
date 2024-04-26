@@ -10,11 +10,8 @@ public class SpawnMedicine : MonoBehaviour
     [SerializeField] float maxInterval = 10f;       // Max time interval in seconds (for spawning meds)
     [SerializeField] float medsLifetime = 5f;       // Lifetime of medicine in seconds
     [SerializeField] Vector3 offset = new Vector3(0, 2, 0);
-
     [SerializeField] GameObject boundingPlane;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         InvokeRepeating("Spawn", Random.Range(minInterval, maxInterval), Random.Range(minInterval, maxInterval));
@@ -29,7 +26,7 @@ public class SpawnMedicine : MonoBehaviour
         {
             // Get the bounds of the plane object
             Bounds bounds = planeRenderer.bounds;
-            
+
             // Randomly select a position within the bounds of the plane
             Vector3 randomPosition = new Vector3(
                 Random.Range(bounds.min.x, bounds.max.x),
@@ -38,7 +35,7 @@ public class SpawnMedicine : MonoBehaviour
             );
 
             // Spawn the object at the random position
-            GameObject medicine = Instantiate(medicinePrefab, randomPosition+offset, medicinePrefab.transform.rotation);
+            GameObject medicine = Instantiate(medicinePrefab, randomPosition + offset, medicinePrefab.transform.rotation);
             Destroy(medicine, medsLifetime); // Destroy the medicine object after medsLifetime seconds
 
         }

@@ -85,7 +85,6 @@ public class CameraMovement : MonoBehaviour
         {
             dragPanMoveActive = true;
             lastMousePosition = Input.mousePosition;
-            Debug.Log(lastMousePosition);
         }
         if (Input.GetMouseButtonUp(1))
         {
