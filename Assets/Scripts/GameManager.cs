@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -53,6 +54,11 @@ public class GameManager : MonoBehaviour
     [Tooltip("This factor is multiplied by the percentage of healthy plants to determine health regen rate.")]
     public float healthIncreaseFactor = 0.5f;
 
+    [Header("Sound Effects")]
+    public AudioClip winSfx;
+    [Range(0, 1)]
+    public float winSfxVolume = 1;
+
     // Public get, private set variables
     public float PlayerCurrency { get; private set; }
     public int HealCount { get; private set; }
@@ -76,21 +82,11 @@ public class GameManager : MonoBehaviour
     private bool inventoryUIActive = false;
     private bool questUIActive = false;
     private bool gameWin = false;
+    private bool below40Percent = false;
+    private string[] themes = { "level1Theme", "level2Theme" };
 
     void Start()
     {
-        // Initialize scene changer
-        GameObject SceneManager = GameObject.FindGameObjectWithTag("SceneManager");
-        if (SceneManager)
-        {
-            sceneChanger = SceneManager.GetComponent<SceneChanger>();
-        }
-        else
-        {
-            Debug.Log("No SceneManager exists in the scene (try running from MainMenu scene)");
-        }
-
-
         // Set active UIs (by default only mainUI)
         shopUI.SetActive(shopUIActive);
         mainUI.SetActive(mainUIActive);
@@ -105,6 +101,9 @@ public class GameManager : MonoBehaviour
         PlantCount = 0;
         CoinCollectedCount = 0;
         EnemiesSquishedCount = 0;
+
+        // Set music
+        BackgroundMusic.Instance.PlayMusic(themes[level]);
     }
 
     void Update()
@@ -121,23 +120,25 @@ public class GameManager : MonoBehaviour
         {
             if (!gameWin)
             {
-                Debug.Log("Game win");
+                gameWin = true;
+                GameSimulationActive = false;
+                LevelComplete();
             }
-            gameWin = true;
-            GameSimulationActive = false;
-            LevelComplete();
+
         }
     }
 
     private void LevelComplete()
     {
+        AudioManager.Instance.Play(winSfx, winSfxVolume);
+        BackgroundMusic.Instance.StopMusic();
         ShowWinScreen();
     }
 
     private void GameOver()
     {
         // Go to game over screen
-        sceneChanger.SceneChange("GameOver");
+        SceneManager.LoadScene("GameOver");
     }
 
     private void TrackGameHealth()
@@ -177,6 +178,16 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateHealthSlider(netHealthChange);
+        if (gameHealth <= 50f && !below40Percent)
+        {
+            below40Percent = true;
+            BackgroundMusic.Instance.PlayMusic("lowHealthTheme");
+        }
+        if (gameHealth > 50f && below40Percent)
+        {
+            below40Percent = false;
+            BackgroundMusic.Instance.PlayMusic(themes[level]);
+        }
         if (gameHealth <= 0f)
         {
             GameOver();

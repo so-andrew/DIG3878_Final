@@ -9,6 +9,9 @@ public class Health : MonoBehaviour
     public float maxHealth = 100f;
     public float healCooldownTime = 60f;
     public bool recentlyHealed = false;
+    public AudioClip healSfx;
+    [Range(0, 1)]
+    public float clipVolume = 1;
     private float healTimer = 0f;
     [SerializeField] Slider slider;
     [SerializeField] Camera playerCamera;
@@ -73,6 +76,7 @@ public class Health : MonoBehaviour
             recentlyHealed = true;
             healTimer = healCooldownTime;
         }
+        AudioManager.Instance.Play(healSfx, clipVolume);
         UpdateSlider();
     }
 

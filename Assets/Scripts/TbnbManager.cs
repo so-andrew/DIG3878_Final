@@ -10,7 +10,8 @@ public class TbnbManager : MonoBehaviour
 {
     // public TMP_Text playerCurrencyDisplay; // [SerializeField] wasn't working
     // public TextMeshProUGUI tbnbBalanceDisplayPrefab;
-    public TextMeshProUGUI tbnbBalanceDisplayInstance;
+    public GameObject tbnbBalanceDisplayInstance;
+    private TMP_Text tbnbBalanceDisplayText;
 
     // set chain: ethereum, moonbeam, polygon etc
     string chain = "binance";
@@ -37,11 +38,11 @@ public class TbnbManager : MonoBehaviour
         //     Destroy(tbnbBalanceDisplayInstance.gameObject);
         // }
 
-        if (tbnbBalanceDisplayInstance.gameObject.activeSelf) // if gameObject is active
+        if (tbnbBalanceDisplayInstance.activeSelf) // if gameObject is active
         {
             CancelInvoke("DeactivateBalanceDisplay"); // stop the 5 second deactivate timer
         }
-        
+
         string account = PlayerPrefs.GetString("Account"); // probably should move this outside for speed
 
         string balance = await EVM.BalanceOf(chain, network, account);
@@ -49,8 +50,8 @@ public class TbnbManager : MonoBehaviour
         Debug.Log("Check balance: " + balance);
 
         // tbnbBalanceDisplayInstance = Instantiate(tbnbBalanceDisplayPrefab);
-        tbnbBalanceDisplayInstance.text = "TBNB Balance: " + balance;
-        tbnbBalanceDisplayInstance.gameObject.SetActive(true);
+        tbnbBalanceDisplayText.text = "TBNB Balance: " + balance;
+        tbnbBalanceDisplayInstance.SetActive(true);
 
         Invoke("DeactivateBalanceDisplay", 5f);
         // Invoke(nameof(DestroyBalanceDisplay), 5);
@@ -59,7 +60,7 @@ public class TbnbManager : MonoBehaviour
 
     void DeactivateBalanceDisplay()
     {
-        tbnbBalanceDisplayInstance.gameObject.SetActive(false);
+        tbnbBalanceDisplayInstance.SetActive(false);
     }
 
     // void DestroyBalanceDisplay()
@@ -78,6 +79,8 @@ public class TbnbManager : MonoBehaviour
 
         PlayerPrefs.SetString("Chain", "binance");
         PlayerPrefs.SetString("Network", "testnet");
+
+        tbnbBalanceDisplayText = tbnbBalanceDisplayInstance.transform.Find("Text").GetComponent<TMP_Text>();
     }
 
     public async void RewardCurrency()
@@ -102,6 +105,13 @@ public class TbnbManager : MonoBehaviour
         string signature = Web3PrivateKey.SignTransaction(privateKey, transaction, chainId);
         string response = await EVM.BroadcastTransaction(chain, network, account, to, value, data, signature, gasPrice, gasLimit, rpc);
         Debug.Log("response: " + response);
+        if (response != null)
+        {
+            WinScreen winScreen = GameManager.Instance.winScreen.GetComponent<WinScreen>();
+            winScreen.transactionHash = transaction;
+            winScreen.responseHash = response;
+            winScreen.ShowPopup();
+        }
 
         // string txConfirmed = await EVM.TxStatus(chain, network, transaction);
         // Debug.Log("txConfirmed: " + txConfirmed); // success, fail, pending
@@ -124,10 +134,13 @@ public class TbnbManager : MonoBehaviour
         // gas price OPTIONAL
         string gasPrice = await EVM.GasPrice(chain, network, rpc);
         // connects to user's browser wallet (metamask) to send a transaction
-        try {
+        try
+        {
             string response = await Web3GL.SendTransaction(to, value, gasLimit, gasPrice);
             Debug.Log("Playment response: " + response);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             Debug.LogException(e, this);
         }
     }
@@ -156,10 +169,10 @@ public class TbnbManager : MonoBehaviour
     // public async void WaitForTxConfirmation(string transaction) // Doesn't work
     // {
     //     float MaxWaitTimeSeconds = 20f;
-        
+
     //     string txStatus = await EVM.TxStatus(chain, network, transaction);
     //     Debug.Log("transaction status: " + txStatus);
-                
+
     //     if (txStatus.Equals("pending"))
     //     {
     //         Debug.Log("passed check!!");

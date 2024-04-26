@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum MouseMode
@@ -30,10 +29,23 @@ public class MouseClick : MonoBehaviour
     public GameObject CurrentItemToPlace { get; private set; }
     public Item.ItemType CurrentItemType { get; private set; }
 
+    [Header("Cursors")]
     private MeshRenderer indicator;
     public Texture2D defaultCursor;
     public Texture2D pickupCursor;
     public Texture2D medicineCursor;
+
+    [Header("Sound Effects")]
+    public AudioClip medicinePickupSfx;
+    [Range(0, 1)]
+    public float medicinePickupSfxVolume = 1f;
+    public AudioClip coinPickupSfx;
+    [Range(0, 1)]
+    public float coinPickupSfxVolume = 1f;
+    public AudioClip plantSfx;
+    [Range(0, 1)]
+    public float plantSfxVolume = 1f;
+
     private Light indicatorLight;
 
     void Start()
@@ -154,6 +166,8 @@ public class MouseClick : MonoBehaviour
             GameManager.Instance.IncrementSpawnCounter(CurrentItemType);
             GameManager.Instance.IncrementPlantCounter();
 
+            AudioManager.Instance.Play(plantSfx, plantSfxVolume);
+
             // If there are no more of current item, reset mouse mode to default
             if (resetMousePlacementMode)
             {
@@ -222,6 +236,7 @@ public class MouseClick : MonoBehaviour
                 {
                     GameManager.Instance.ChangePlayerCurrency(20f);
                     GameManager.Instance.IncrementCoinCollectCounter();
+                    AudioManager.Instance.Play(coinPickupSfx, coinPickupSfxVolume);
                     Destroy(clickableItem);
                 }
                 //Check if item is Enemy
@@ -235,6 +250,7 @@ public class MouseClick : MonoBehaviour
                 {
                     GameManager.Instance.AddToInventory(Item.ItemType.Medicine, 1);
                     GameManager.Instance.UpdateInventoryDisplay();
+                    AudioManager.Instance.Play(medicinePickupSfx, medicinePickupSfxVolume);
                     Destroy(clickableItem);
                 }
             }

@@ -45,6 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ee213c37fbd0d843b4ff29f429477ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  healCooldownTime: 60
+  recentlyHealed: 0
+  healSfx: {fileID: 8300000, guid: 8b0d2c82ba41429488450c5fdc0d83e8, type: 3}
+  clipVolume: 0.25
   slider: {fileID: 3009370609883172379}
   playerCamera: {fileID: 0}
   offset: {x: 0, y: 1, z: 0}

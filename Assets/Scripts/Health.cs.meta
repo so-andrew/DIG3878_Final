@@ -3,7 +3,10 @@ guid: 5ee213c37fbd0d843b4ff29f429477ef
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - healSfx: {instanceID: 0}
+  - slider: {instanceID: 0}
+  - playerCamera: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
