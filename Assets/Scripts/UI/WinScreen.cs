@@ -70,7 +70,7 @@ public class WinScreen : MonoBehaviour
     {
         tbnbManager.RewardCurrency();
         claimedReward = true;
-        claimRewardButton.SetActive(false);
+        claimRewardButton.SetActive(!claimedReward);
     }
 
     public void ShowPopup()
