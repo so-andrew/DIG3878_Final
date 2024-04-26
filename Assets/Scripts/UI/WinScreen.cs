@@ -23,6 +23,8 @@ public class WinScreen : MonoBehaviour
     private TbnbManager tbnbManager;
     public string transactionHash;
     public string responseHash;
+    private bool blockchainActive;
+    private RectTransform winScreenRect;
 
     // Start is called before the first frame update
     void Start()
@@ -39,15 +41,17 @@ public class WinScreen : MonoBehaviour
         enemyCount = enemies.Find("EnemiesSquishedCount").GetComponent<TMP_Text>();
 
         claimRewardButton = transform.Find("ClaimRewardButton").gameObject;
-        RectTransform winScreenRect = GetComponent<RectTransform>();
+        winScreenRect = GetComponent<RectTransform>();
 
         if (PlayerPrefs.GetString("Account") == "")
         {
+            blockchainActive = false;
             claimRewardButton.SetActive(false);
             winScreenRect.sizeDelta = new Vector2(winScreenRect.sizeDelta.x, winScreenRect.sizeDelta.y - 100);
         }
         else
         {
+            blockchainActive = true;
             claimRewardButton.SetActive(true);
         }
 
@@ -71,6 +75,7 @@ public class WinScreen : MonoBehaviour
         tbnbManager.RewardCurrency();
         claimedReward = true;
         claimRewardButton.SetActive(!claimedReward);
+        winScreenRect.sizeDelta = new Vector2(winScreenRect.sizeDelta.x, winScreenRect.sizeDelta.y - 100);
     }
 
     public void ShowPopup()
@@ -87,5 +92,7 @@ public class WinScreen : MonoBehaviour
         healCount.text = GameManager.Instance.HealCount.ToString();
         coinCount.text = GameManager.Instance.CoinCollectedCount.ToString();
         enemyCount.text = GameManager.Instance.EnemiesSquishedCount.ToString();
+
+        claimRewardButton.SetActive(blockchainActive && !claimedReward);
     }
 }
